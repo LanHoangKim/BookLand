@@ -1,0 +1,15 @@
+@model Category
+@{
+    ViewData["Title"] = "Xóa danh mục";
+}
+<partial name="_PageHeader" model='new PageHeaderModel(ViewData["Title"]!.ToString()!, "Danh mục sản phẩm")' />
+<div class="card">
+    <div class="card-body">
+        <table class="table table-borderless info-table" style="max-width:700px">
+            <tr><th>Tên danh mục</th><td class="fw-bold">@Model.CategoryName</td></tr>
+            <tr><th>Danh mục cha</th><td>@(Model.Parent?.CategoryName ?? "—")</td></tr>
+            <tr><th>Mô tả</th><td>@(Model.Description ?? "—")</td></tr>
+        </table>
+        <partial name="_DeleteGuard" />
+    </div>
+</div>

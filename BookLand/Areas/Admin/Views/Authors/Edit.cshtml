@@ -1,0 +1,15 @@
+@model Author
+@{
+    ViewData["Title"] = "Sửa tác giả";
+}
+<partial name="_PageHeader" model='new PageHeaderModel(ViewData["Title"]!.ToString()!, "Tác giả")' />
+<div class="card">
+    <form asp-action="Edit" method="post" class="card-body" novalidate>
+        <input type="hidden" asp-for="AuthorId" />
+        <partial name="_Form" model="Model" />
+        <hr />
+        <button type="submit" class="btn btn-brand"><i class="fa-solid fa-floppy-disk me-1"></i> Lưu thay đổi</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Hủy</a>
+    </form>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

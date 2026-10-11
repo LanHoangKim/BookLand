@@ -1,0 +1,74 @@
+@model ProductDetail
+@{
+    bool isCreate = Model.ProductDetailId == 0;
+}
+<div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+<div class="row">
+    <div class="col-md-8 mb-3">
+        <label asp-for="ProductId" class="form-label"><span class="req">*</span></label>
+        @if (isCreate)
+        {
+            <select asp-for="ProductId" asp-items="ViewBag.ProductId" class="form-select">
+                <option value="0">— Chọn sản phẩm chưa có chi tiết —</option>
+            </select>
+        }
+        else
+        {
+            <input type="hidden" asp-for="ProductId" />
+            <input class="form-control" value="@Model.Product?.ProductName" readonly />
+        }
+        <span asp-validation-for="ProductId" class="text-danger field"></span>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label asp-for="Sku" class="form-label"></label>
+        <input asp-for="Sku" class="form-control" />
+        <span asp-validation-for="Sku" class="text-danger field"></span>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label asp-for="Translator" class="form-label"></label>
+        <input asp-for="Translator" class="form-control" />
+        <span asp-validation-for="Translator" class="text-danger field"></span>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label asp-for="Language" class="form-label"></label>
+        <input asp-for="Language" class="form-control" list="language-list" />
+        <datalist id="language-list"><option value="Tiếng Việt"></option><option value="Tiếng Anh"></option><option value="Tiếng Nhật"></option><option value="Tiếng Trung"></option></datalist>
+        <span asp-validation-for="Language" class="text-danger field"></span>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label asp-for="CoverTypeId" class="form-label"></label>
+        <select asp-for="CoverTypeId" asp-items="ViewBag.CoverTypeId" class="form-select">
+            <option value="">— Không chọn —</option>
+        </select>
+    </div>
+    <div class="col-md-3 mb-3">
+        <label asp-for="PublishYear" class="form-label"></label>
+        <input asp-for="PublishYear" class="form-control" type="number" />
+        <span asp-validation-for="PublishYear" class="text-danger field"></span>
+    </div>
+    <div class="col-md-3 mb-3">
+        <label asp-for="PageCount" class="form-label"></label>
+        <input asp-for="PageCount" class="form-control" type="number" />
+        <span asp-validation-for="PageCount" class="text-danger field"></span>
+    </div>
+    <div class="col-md-3 mb-3">
+        <label asp-for="Weight" class="form-label"></label>
+        <input asp-for="Weight" class="form-control" type="number" />
+        <span asp-validation-for="Weight" class="text-danger field"></span>
+    </div>
+    <div class="col-md-3 mb-3">
+        <label asp-for="Dimensions" class="form-label"></label>
+        <input asp-for="Dimensions" class="form-control" placeholder="20.5 x 14 x 1.5 cm" />
+        <span asp-validation-for="Dimensions" class="text-danger field"></span>
+    </div>
+    <div class="col-md-3 mb-3">
+        <label asp-for="Quantity" class="form-label"><span class="req">*</span></label>
+        <input asp-for="Quantity" class="form-control" type="number" min="0" />
+        <span asp-validation-for="Quantity" class="text-danger field"></span>
+    </div>
+    <div class="col-md-3 mb-3">
+        <label asp-for="SoldQuantity" class="form-label"></label>
+        <input asp-for="SoldQuantity" class="form-control" type="number" min="0" />
+        <span asp-validation-for="SoldQuantity" class="text-danger field"></span>
+    </div>
+</div>

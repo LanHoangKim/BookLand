@@ -1,0 +1,22 @@
+@model AdminUser
+@{
+    ViewData["Title"] = "Thông tin người quản trị";
+}
+<partial name="_PageHeader" model='new PageHeaderModel(ViewData["Title"]!.ToString()!, "Quản lý người dùng")' />
+<div class="card">
+    <div class="card-body">
+        <table class="table info-table mb-0" style="max-width:700px">
+            <tr><th>Mã</th><td>@Model.AdminId</td></tr>
+            <tr><th>Tên đăng nhập</th><td class="fw-bold">@Model.Username</td></tr>
+            <tr><th>Họ tên</th><td>@Model.FullName</td></tr>
+            <tr><th>Email</th><td>@(Model.Email ?? "—")</td></tr>
+            <tr><th>Vai trò</th><td>@Model.Role</td></tr>
+            <tr><th>Ngày tạo</th><td>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td></tr>
+            <tr><th>Mật khẩu</th><td class="text-muted">Được mã hóa (PBKDF2), không hiển thị</td></tr>
+        </table>
+    </div>
+    <div class="card-footer bg-white">
+        <a asp-action="Edit" asp-route-id="@Model.AdminId" class="btn btn-outline-primary"><i class="fa-regular fa-pen-to-square me-1"></i>Sửa</a>
+        <a asp-action="Index" class="btn btn-outline-secondary">Quay lại danh sách</a>
+    </div>
+</div>

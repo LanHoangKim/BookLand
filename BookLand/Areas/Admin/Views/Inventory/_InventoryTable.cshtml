@@ -1,0 +1,36 @@
+@model List<ProductDetail>
+@* Partial dùng cho 2 danh sách của Quản lý kho hàng: hàng tồn (Quantity > 0) và hàng cần nhập (Quantity = 0) *@
+@if (Model.Count == 0)
+{
+    <div class="p-4 text-muted text-center">Không có sản phẩm nào.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 admin-table">
+            <thead>
+                <tr><th style="width:70px">Ảnh</th><th>Sản phẩm</th><th>Mã hàng</th><th>Danh mục</th><th class="text-center">Số lượng tồn</th><th class="text-center">Đã bán</th><th></th></tr>
+            </thead>
+            <tbody>
+                @foreach (var d in Model)
+                {
+                    <tr>
+                        <td><img src="@d.Product.ImageUrl" class="thumb" alt="" /></td>
+                        <td class="fw-500">@d.Product.ProductName</td>
+                        <td><code>@d.Sku</code></td>
+                        <td>@d.Product.Category?.CategoryName</td>
+                        <td class="text-center">
+                            <span class="badge fs-6 @(d.Quantity == 0 ? "bg-danger" : d.Quantity <= 10 ? "bg-warning text-dark" : "bg-success-subtle text-success")">@d.Quantity</span>
+                        </td>
+                        <td class="text-center">@d.SoldQuantity.ToNumber()</td>
+                        <td class="actions">
+                            <a asp-controller="ProductDetails" asp-action="Edit" asp-route-id="@d.ProductDetailId" class="btn btn-sm @(d.Quantity == 0 ? "btn-brand" : "btn-outline-secondary")">
+                                <i class="fa-solid fa-truck-ramp-box me-1"></i>@(d.Quantity == 0 ? "Nhập hàng" : "Cập nhật tồn")
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

@@ -1,0 +1,100 @@
+@model Product
+@{
+    bool isCreate = Model.ProductId == 0;
+}
+<div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="mb-3">
+            <label asp-for="ProductName" class="form-label"><span class="req">*</span></label>
+            <input asp-for="ProductName" class="form-control" />
+            <span asp-validation-for="ProductName" class="text-danger field"></span>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="CategoryId" class="form-label"><span class="req">*</span></label>
+                <select asp-for="CategoryId" asp-items="ViewBag.CategoryId" class="form-select">
+                    <option value="0">— Chọn danh mục —</option>
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger field"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="AuthorId" class="form-label"></label>
+                <select asp-for="AuthorId" asp-items="ViewBag.AuthorId" class="form-select">
+                    <option value="">— Không chọn —</option>
+                </select>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="PublisherId" class="form-label"></label>
+                <select asp-for="PublisherId" asp-items="ViewBag.PublisherId" class="form-select">
+                    <option value="">— Không chọn —</option>
+                </select>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="SupplierId" class="form-label"></label>
+                <select asp-for="SupplierId" asp-items="ViewBag.SupplierId" class="form-select">
+                    <option value="">— Không chọn —</option>
+                </select>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="Price" class="form-label"><span class="req">*</span></label>
+                <div class="input-group">
+                    <input asp-for="Price" class="form-control" type="number" min="0" step="100" />
+                    <span class="input-group-text">đ</span>
+                </div>
+                <span asp-validation-for="Price" class="text-danger field"></span>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="OriginalPrice" class="form-label"></label>
+                <div class="input-group">
+                    <input asp-for="OriginalPrice" class="form-control" type="number" min="0" step="100" />
+                    <span class="input-group-text">đ</span>
+                </div>
+                <span asp-validation-for="OriginalPrice" class="text-danger field"></span>
+            </div>
+            @if (isCreate)
+            {
+                <div class="col-md-4 mb-3">
+                    <label class="form-label" for="quantity">Số lượng tồn ban đầu</label>
+                    <input type="number" id="quantity" name="quantity" value="@ViewBag.Quantity" min="0" max="100000" class="form-control" />
+                    @Html.ValidationMessage("quantity", new { @class = "text-danger field" })
+                </div>
+            }
+        </div>
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description" class="form-control" rows="6"></textarea>
+            <span asp-validation-for="Description" class="text-danger field"></span>
+        </div>
+        <div class="d-flex flex-wrap gap-4">
+            <div class="form-check form-switch"><input asp-for="IsActive" class="form-check-input" /><label asp-for="IsActive" class="form-check-label"></label></div>
+            <div class="form-check form-switch"><input asp-for="IsFeatured" class="form-check-input" /><label asp-for="IsFeatured" class="form-check-label"></label></div>
+            <div class="form-check form-switch"><input asp-for="IsFlashSale" class="form-check-input" /><label asp-for="IsFlashSale" class="form-check-label"></label></div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <label class="form-label">Ảnh sản phẩm @if (isCreate) { <span class="req">*</span> }</label>
+        <div class="mb-2"><img id="product-preview" src="@(Model.ImageUrl ?? "/images/no-image.png")" class="img-preview" alt="" /></div>
+        <input type="file" name="imageFile" class="form-control" accept="image/*" data-preview="#product-preview" />
+        @Html.ValidationMessage("imageFile", new { @class = "text-danger field" })
+        <div class="form-text mb-3">@(isCreate ? "Bắt buộc. " : "Chọn ảnh mới nếu muốn thay. ")JPG, PNG, WEBP - tối đa 2 MB.</div>
+
+        <label class="form-label">Ảnh phụ (thư viện ảnh)</label>
+        @if (!isCreate && Model.ProductImages.Count > 0)
+        {
+            <div class="gallery-edit mb-2">
+                @foreach (var img in Model.ProductImages.OrderBy(i => i.SortOrder))
+                {
+                    <label title="Chọn để xóa ảnh này">
+                        <img src="@img.ImageUrl" alt="" />
+                        <input type="checkbox" name="removeImageIds" value="@img.ProductImageId" class="form-check-input" />
+                    </label>
+                }
+            </div>
+            <div class="form-text mb-2">Tích chọn ảnh muốn xóa.</div>
+        }
+        <input type="file" name="galleryFiles" class="form-control" accept="image/*" multiple />
+        @Html.ValidationMessage("galleryFiles", new { @class = "text-danger field" })
+        <div class="form-text">Có thể chọn nhiều ảnh cùng lúc.</div>
+    </div>
+</div>

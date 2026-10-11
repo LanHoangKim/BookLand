@@ -1,0 +1,29 @@
+@model PagedList<Order>
+@{
+    ViewData["Title"] = "Quản lý đơn hàng";
+    var counts = ViewBag.StatusCounts as Dictionary<string, int> ?? [];
+    string? status = ViewBag.Status as string;
+}
+<partial name="_PageHeader" model='new PageHeaderModel(ViewData["Title"]!.ToString()!)' />
+
+<div class="card">
+    <form method="get" class="toolbar">
+        <div class="d-flex gap-2 flex-wrap">
+            <div class="input-group" style="width:320px">
+                <span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Mã đơn, tên khách, số điện thoại..." />
+            </div>
+            <select name="status" class="form-select auto-submit" style="width:220px">
+                <option value="">Tất cả trạng thái (@counts.Values.Sum())</option>
+                @foreach (var s in OrderStatuses.All)
+                {
+                    <option value="@s" selected="@(status == s)">@s (@(counts.GetValueOrDefault(s)))</option>
+                }
+            </select>
+            <button class="btn btn-outline-secondary" type="submit">Lọc</button>
+        </div>
+        <span class="text-muted">@Model.TotalItems đơn hàng</span>
+    </form>
+    <partial name="_OrderListPartial" model="new OrderListPartialModel { Orders = Model.Items, ForAdmin = true, ShowCustomer = true }" />
+    <partial name="_Pagination" model="new PaginationModel { Page = Model.Page, TotalPages = Model.TotalPages }" />
+</div>

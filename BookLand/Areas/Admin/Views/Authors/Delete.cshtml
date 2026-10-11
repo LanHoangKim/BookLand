@@ -1,0 +1,15 @@
+@model Author
+@{
+    ViewData["Title"] = "Xóa tác giả";
+}
+<partial name="_PageHeader" model='new PageHeaderModel(ViewData["Title"]!.ToString()!, "Tác giả")' />
+<div class="card">
+    <div class="card-body">
+        <table class="table table-borderless info-table" style="max-width:700px">
+            <tr><th>Tên tác giả</th><td class="fw-bold">@Model.AuthorName</td></tr>
+            <tr><th>Quốc tịch</th><td>@(Model.Nationality ?? "—")</td></tr>
+            <tr><th>Năm sinh</th><td>@(Model.BirthYear?.ToString() ?? "—")</td></tr>
+        </table>
+        <partial name="_DeleteGuard" />
+    </div>
+</div>

@@ -1,0 +1,120 @@
+@model CheckoutViewModel
+@{
+    ViewData["Title"] = "Thanh toán";
+}
+
+<div class="container checkout-page">
+    <nav class="breadcrumb">
+        <a asp-controller="Home" asp-action="Index">Trang chủ</a>
+        <i class="fa-solid fa-chevron-right"></i>
+        <a asp-controller="Cart" asp-action="Index">Giỏ hàng</a>
+        <i class="fa-solid fa-chevron-right"></i>
+        <span class="current">Thanh toán</span>
+    </nav>
+
+    <form asp-action="Index" method="post" id="checkout-form" novalidate>
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger validation-box"></div>
+
+        <section class="box co-section">
+            <h2>ĐỊA CHỈ GIAO HÀNG</h2>
+            <div class="co-row">
+                <label asp-for="ReceiverName"></label>
+                <div class="co-field">
+                    <input asp-for="ReceiverName" class="input" placeholder="Nhập họ và tên người nhận" />
+                    <span asp-validation-for="ReceiverName" class="field-error"></span>
+                </div>
+            </div>
+            <div class="co-row">
+                <label>Email</label>
+                <div class="co-field"><input class="input" value="@Model.Email" readonly /></div>
+            </div>
+            <div class="co-row">
+                <label asp-for="ReceiverPhone"></label>
+                <div class="co-field">
+                    <input asp-for="ReceiverPhone" class="input" placeholder="Ví dụ: 0901234567 (10 ký tự số)" />
+                    <span asp-validation-for="ReceiverPhone" class="field-error"></span>
+                </div>
+            </div>
+            <div class="co-row">
+                <label asp-for="ShippingAddress"></label>
+                <div class="co-field">
+                    <textarea asp-for="ShippingAddress" class="input" rows="2" placeholder="Số nhà, tên đường, phường/xã, tỉnh/thành phố"></textarea>
+                    <span asp-validation-for="ShippingAddress" class="field-error"></span>
+                </div>
+            </div>
+            <div class="co-row">
+                <label asp-for="Note"></label>
+                <div class="co-field">
+                    <input asp-for="Note" class="input" placeholder="Ghi chú cho người giao hàng (không bắt buộc)" />
+                    <span asp-validation-for="Note" class="field-error"></span>
+                </div>
+            </div>
+        </section>
+
+        <section class="box co-section">
+            <h2>PHƯƠNG THỨC VẬN CHUYỂN</h2>
+            <label class="radio-row checked">
+                <input type="radio" checked disabled />
+                <span><b>Giao hàng tiêu chuẩn:</b> @(Model.Cart.ShippingFee == 0 ? "Miễn phí" : Model.Cart.ShippingFee.ToVnd())
+                    <small>Miễn phí cho đơn hàng từ @CartRules.FreeShipThreshold.ToVnd() · Dự kiến giao 2 - 4 ngày</small></span>
+            </label>
+        </section>
+
+        <section class="box co-section">
+            <h2>PHƯƠNG THỨC THANH TOÁN</h2>
+            @foreach (var method in PaymentMethods.All)
+            {
+                <label class="radio-row">
+                    <input type="radio" asp-for="PaymentMethod" value="@method" />
+                    <span>
+                        <i class="fa-solid @(method == PaymentMethods.Cod ? "fa-money-bill-wave" : "fa-building-columns") pay-icon"></i>
+                        @method
+                        @if (method == PaymentMethods.BankTransfer)
+                        {
+                            <small>Thông tin chuyển khoản sẽ được gửi qua email sau khi đặt hàng</small>
+                        }
+                    </span>
+                </label>
+            }
+            <span asp-validation-for="PaymentMethod" class="field-error"></span>
+        </section>
+
+        <section class="box co-section">
+            <h2>KIỂM TRA LẠI ĐƠN HÀNG</h2>
+            <div class="co-items">
+                @foreach (var item in Model.Cart.Items)
+                {
+                    <div class="co-item">
+                        <img src="@item.ImageUrl" alt="@item.ProductName" />
+                        <div class="co-item-name">@item.ProductName</div>
+                        <div class="co-item-price">
+                            <b>@item.Price.ToVnd()</b>
+                            @if (item.OriginalPrice > item.Price)
+                            {
+                                <s>@item.OriginalPrice.ToVnd()</s>
+                            }
+                        </div>
+                        <div class="co-item-qty">x @item.Quantity</div>
+                        <div class="co-item-total">@item.LineTotal.ToVnd()</div>
+                    </div>
+                }
+            </div>
+            <a class="continue-link" asp-controller="Cart" asp-action="Index"><i class="fa-solid fa-pen"></i> Chỉnh sửa giỏ hàng</a>
+        </section>
+
+        <div class="co-bottom">
+            <div class="container co-bottom-inner">
+                <div class="co-sums">
+                    <div><span>Thành tiền</span><b>@Model.Cart.Subtotal.ToVnd()</b></div>
+                    <div><span>Phí vận chuyển</span><b>@(Model.Cart.ShippingFee == 0 ? "Miễn phí" : Model.Cart.ShippingFee.ToVnd())</b></div>
+                    <div class="co-grand"><span>Tổng Số Tiền (gồm VAT)</span><b>@Model.Cart.Total.ToVnd()</b></div>
+                </div>
+                <button type="submit" class="btn-red btn-lg co-submit">Xác nhận thanh toán</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

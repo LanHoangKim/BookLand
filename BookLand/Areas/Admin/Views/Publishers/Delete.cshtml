@@ -1,0 +1,15 @@
+@model Publisher
+@{
+    ViewData["Title"] = "Xóa nhà xuất bản";
+}
+<partial name="_PageHeader" model='new PageHeaderModel(ViewData["Title"]!.ToString()!, "Nhà xuất bản")' />
+<div class="card">
+    <div class="card-body">
+        <table class="table table-borderless info-table" style="max-width:700px">
+            <tr><th>Tên nhà xuất bản</th><td class="fw-bold">@Model.PublisherName</td></tr>
+            <tr><th>Địa chỉ</th><td>@(Model.Address ?? "—")</td></tr>
+            <tr><th>Website</th><td>@(Model.Website ?? "—")</td></tr>
+        </table>
+        <partial name="_DeleteGuard" />
+    </div>
+</div>

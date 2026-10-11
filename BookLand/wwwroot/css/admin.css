@@ -1,0 +1,122 @@
+/* =========================================================
+   BOOKLAND - giao diện trang quản trị (Bootstrap 5 + tùy biến)
+   ========================================================= */
+:root { --brand: #C92127; --brand-dark: #A8181E; --sidebar: #1E2430; --sidebar-2: #262D3B; }
+
+body.admin-body { background: #F3F4F7; font-family: "Roboto", "Segoe UI", Arial, sans-serif; font-size: 14px; color: #333; }
+.text-brand { color: var(--brand) !important; }
+.btn-brand { background: var(--brand); border-color: var(--brand); color: #fff; }
+.btn-brand:hover, .btn-brand:focus { background: var(--brand-dark); border-color: var(--brand-dark); color: #fff; }
+
+/* Sidebar */
+.admin-sidebar { position: fixed; inset: 0 auto 0 0; width: 250px; background: var(--sidebar); color: #C9CED8; overflow-y: auto; z-index: 1030; transition: transform .2s; }
+.admin-brand { display: flex; align-items: center; gap: 10px; padding: 16px 18px; background: #fff; text-decoration: none; }
+.admin-brand img { height: 30px; }
+.admin-brand span { font-weight: 700; font-size: 12px; color: #fff; background: var(--brand); padding: 2px 8px; border-radius: 4px; letter-spacing: 1px; }
+.admin-menu { padding: 10px 0 30px; }
+.menu-label { padding: 16px 20px 6px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #7D8597; }
+.menu-link { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 20px; color: #C9CED8; text-decoration: none; background: none; border: 0; text-align: left; font-size: 14px; border-left: 3px solid transparent; }
+.menu-link i:first-child { width: 18px; text-align: center; color: #8C94A6; }
+.menu-link:hover { color: #fff; background: var(--sidebar-2); }
+.menu-link.active { color: #fff; background: var(--sidebar-2); border-left-color: var(--brand); }
+.menu-link.active i:first-child { color: #FF6B70; }
+.menu-toggle .caret { margin-left: auto; font-size: 10px; transition: transform .2s; }
+.menu-toggle.collapsed .caret { transform: rotate(-90deg); }
+.sub-link { display: block; padding: 8px 20px 8px 50px; color: #AEB4C2; text-decoration: none; font-size: 13.5px; position: relative; }
+.sub-link::before { content: ""; position: absolute; left: 30px; top: 50%; width: 6px; height: 6px; border-radius: 50%; background: #5A6273; transform: translateY(-50%); }
+.sub-link:hover { color: #fff; }
+.sub-link.active { color: #fff; font-weight: 500; }
+.sub-link.active::before { background: var(--brand); }
+
+/* Khu vực chính */
+.admin-main { margin-left: 250px; min-height: 100vh; }
+.admin-topbar { position: sticky; top: 0; z-index: 1020; display: flex; align-items: center; gap: 12px; height: 60px; padding: 0 24px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+.sidebar-toggle { display: none; }
+.topbar-title { font-weight: 500; color: #555; }
+.admin-user { display: flex; align-items: center; gap: 8px; }
+.admin-user i { font-size: 22px; color: var(--brand); }
+.admin-content { padding: 22px 24px 40px; }
+
+.page-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; margin-bottom: 18px; }
+.page-head h1 { font-size: 22px; font-weight: 700; margin: 0 0 4px; }
+.crumbs { font-size: 13px; color: #888; display: flex; gap: 6px; }
+.crumbs a { color: #888; text-decoration: none; }
+.crumbs .current { color: var(--brand); }
+
+.card { border: 0; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+.card-header { background: #fff; border-bottom: 1px solid #F0F0F0; padding: 14px 18px; border-radius: 10px 10px 0 0 !important; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid #F0F0F0; }
+.search-inline { min-width: 320px; }
+
+.admin-table thead th { background: #F8F9FB; color: #555; font-weight: 500; font-size: 13px; white-space: nowrap; border-bottom: 1px solid #EEE; }
+.admin-table td { border-color: #F2F2F2; }
+.admin-table .thumb { width: 46px; height: 60px; object-fit: contain; background: #fff; border-radius: 4px; }
+.admin-table .cat-child td:first-child { padding-left: 30px; }
+.admin-table .cat-parent-row { background: #FFFDF8; font-weight: 500; }
+.actions { white-space: nowrap; text-align: right; }
+.actions .btn { padding: 3px 9px; font-size: 13px; }
+
+/* Thẻ thống kê */
+.stat-card { border-radius: 12px; padding: 18px 20px; color: #fff; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+.stat-card .label { font-size: 13px; opacity: .9; }
+.stat-card .value { font-size: 26px; font-weight: 700; line-height: 1.2; }
+.stat-card i { font-size: 34px; opacity: .35; }
+.stat-red { background: linear-gradient(135deg, #E8453C, #C92127); }
+.stat-blue { background: linear-gradient(135deg, #4C8DF6, #2562D8); }
+.stat-green { background: linear-gradient(135deg, #34C38F, #1E9C6D); }
+.stat-orange { background: linear-gradient(135deg, #FFB547, #F08C00); }
+.revenue-bars { display: flex; align-items: flex-end; gap: 14px; height: 200px; padding: 10px 6px 0; }
+.revenue-bars .bar { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 6px; }
+.revenue-bars .bar div { width: 100%; max-width: 46px; background: linear-gradient(180deg, #F2655D, #C92127); border-radius: 6px 6px 0 0; min-height: 4px; }
+.revenue-bars .bar small { color: #888; font-size: 12px; }
+.revenue-bars .bar b { font-size: 11px; color: #555; white-space: nowrap; }
+
+/* Form */
+.form-label { font-weight: 500; }
+.form-label .req { color: var(--brand); }
+.field-validation-error, .text-danger.field { font-size: 13px; }
+.input-validation-error { border-color: #dc3545 !important; }
+.validation-summary-valid { display: none; }
+.img-preview { width: 120px; height: 160px; object-fit: contain; border: 1px dashed #CCC; border-radius: 8px; background: #FAFAFA; }
+.gallery-edit { display: flex; flex-wrap: wrap; gap: 10px; }
+.gallery-edit label { position: relative; border: 1px solid #EEE; border-radius: 6px; padding: 4px; cursor: pointer; }
+.gallery-edit img { width: 70px; height: 90px; object-fit: contain; }
+.gallery-edit input { position: absolute; top: 4px; right: 4px; }
+.info-table th { width: 220px; color: #777; font-weight: 400; }
+
+/* Đăng nhập admin */
+.admin-login { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1E2430 0%, #3A1F2A 55%, #C92127 140%); }
+.login-card { width: 400px; max-width: calc(100% - 32px); background: #fff; border-radius: 14px; padding: 34px 32px; box-shadow: 0 20px 50px rgba(0,0,0,.3); }
+.login-card img { height: 40px; display: block; margin: 0 auto 6px; }
+.login-card h1 { font-size: 18px; text-align: center; color: #666; margin-bottom: 22px; }
+
+/* Phân trang (dùng chung partial _Pagination) */
+.pagination { display: flex; justify-content: center; align-items: center; gap: 6px; padding: 14px 0 6px; margin: 0; }
+.page-btn { min-width: 34px; height: 34px; padding: 0 6px; border-radius: 17px; display: inline-flex; align-items: center; justify-content: center; color: #333; text-decoration: none; }
+.page-btn:hover { background: #EEE; color: #333; }
+.page-btn.active { background: var(--brand); color: #fff; font-weight: 700; }
+.page-dots { color: #999; }
+
+.nav-tabs .nav-link { color: #555; }
+.nav-tabs .nav-link.active { color: var(--brand); font-weight: 500; }
+
+/* Partial chi tiết sản phẩm và hóa đơn trong trang admin */
+.admin-content .pd-box { box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+.admin-content .pd-left { top: 76px; }
+
+@media (max-width: 992px) {
+    .admin-sidebar { transform: translateX(-100%); }
+    body.sidebar-open .admin-sidebar { transform: none; }
+    .admin-main { margin-left: 0; }
+    .sidebar-toggle { display: inline-block; }
+    .search-inline { min-width: 0; width: 100%; }
+}
+
+/* Dashboard: danh sách sắp hết hàng chia 2 cột */
+.low-stock-grid { display: grid; grid-template-columns: repeat(2, 1fr); }
+.low-stock-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid #EEE; min-width: 0; }
+.low-stock-item:nth-child(odd) { border-right: 1px solid #EEE; }
+@media (max-width: 768px) {
+    .low-stock-grid { grid-template-columns: 1fr; }
+    .low-stock-item:nth-child(odd) { border-right: 0; }
+}

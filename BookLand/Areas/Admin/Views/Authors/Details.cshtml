@@ -1,0 +1,22 @@
+@model Author
+@{
+    ViewData["Title"] = "Chi tiết tác giả";
+    var products = ViewBag.Products as List<Product> ?? [];
+}
+<partial name="_PageHeader" model='new PageHeaderModel(ViewData["Title"]!.ToString()!, "Tác giả")' />
+<div class="card">
+    <div class="card-body">
+        <table class="table table-borderless info-table mb-0" style="max-width:800px">
+            <tr><th>Mã tác giả</th><td>@Model.AuthorId</td></tr>
+            <tr><th>Tên tác giả</th><td class="fw-bold">@Model.AuthorName</td></tr>
+            <tr><th>Quốc tịch</th><td>@(Model.Nationality ?? "—")</td></tr>
+            <tr><th>Năm sinh</th><td>@(Model.BirthYear?.ToString() ?? "—")</td></tr>
+            <tr><th>Tiểu sử</th><td>@(Model.Biography ?? "—")</td></tr>
+        </table>
+    </div>
+    <div class="card-footer bg-white">
+        <a asp-action="Edit" asp-route-id="@Model.AuthorId" class="btn btn-outline-primary"><i class="fa-regular fa-pen-to-square me-1"></i>Sửa</a>
+        <a asp-action="Index" class="btn btn-outline-secondary">Quay lại danh sách</a>
+    </div>
+</div>
+<partial name="_RelatedProducts" model="products" />

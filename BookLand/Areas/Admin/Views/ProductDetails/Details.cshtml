@@ -1,0 +1,27 @@
+@model ProductDetail
+@{
+    ViewData["Title"] = "Thông tin chi tiết sản phẩm";
+}
+<partial name="_PageHeader" model='new PageHeaderModel(ViewData["Title"]!.ToString()!, "Chi tiết sản phẩm")' />
+<div class="card">
+    <div class="card-body">
+        <table class="table info-table mb-0" style="max-width:820px">
+            <tr><th>Sản phẩm</th><td><a asp-controller="Products" asp-action="Details" asp-route-id="@Model.ProductId" class="fw-bold">@Model.Product.ProductName</a></td></tr>
+            <tr><th>Danh mục</th><td>@Model.Product.Category?.CategoryName</td></tr>
+            <tr><th>Mã hàng</th><td><code>@Model.Sku</code></td></tr>
+            <tr><th>Người dịch</th><td>@(Model.Translator ?? "—")</td></tr>
+            <tr><th>Năm xuất bản</th><td>@Model.PublishYear</td></tr>
+            <tr><th>Ngôn ngữ</th><td>@Model.Language</td></tr>
+            <tr><th>Trọng lượng (gr)</th><td>@Model.Weight</td></tr>
+            <tr><th>Kích thước bao bì</th><td>@Model.Dimensions</td></tr>
+            <tr><th>Số trang</th><td>@Model.PageCount</td></tr>
+            <tr><th>Hình thức bìa</th><td>@(Model.CoverType?.CoverTypeName ?? "—")</td></tr>
+            <tr><th>Số lượng tồn</th><td><span class="badge fs-6 @(Model.Quantity == 0 ? "bg-danger" : "bg-success")">@Model.Quantity</span></td></tr>
+            <tr><th>Số lượng đã bán</th><td>@Model.SoldQuantity.ToNumber()</td></tr>
+        </table>
+    </div>
+    <div class="card-footer bg-white">
+        <a asp-action="Edit" asp-route-id="@Model.ProductDetailId" class="btn btn-outline-primary"><i class="fa-regular fa-pen-to-square me-1"></i>Sửa</a>
+        <a asp-action="Index" class="btn btn-outline-secondary">Quay lại danh sách</a>
+    </div>
+</div>

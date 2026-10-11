@@ -1,0 +1,32 @@
+@*
+    Khối xác nhận xóa: hiển thị các ràng buộc dữ liệu (nếu có) và chỉ cho bấm Xóa khi không còn ràng buộc.
+    ViewBag.Blockers: danh sách ràng buộc, ViewBag.Error: thông báo khi cố xóa.
+*@
+@{
+    var blockers = ViewBag.Blockers as List<string> ?? [];
+}
+@if (ViewBag.Error is string error)
+{
+    <div class="alert alert-danger"><i class="fa-solid fa-ban me-2"></i>@error</div>
+}
+@if (blockers.Count > 0)
+{
+    <div class="alert alert-warning">
+        <div class="fw-bold mb-1"><i class="fa-solid fa-link me-2"></i>Dữ liệu đang được sử dụng ở bảng liên quan:</div>
+        <ul class="mb-0">
+            @foreach (var b in blockers)
+            {
+                <li>@b</li>
+            }
+        </ul>
+    </div>
+}
+else
+{
+    <div class="alert alert-light border"><i class="fa-solid fa-triangle-exclamation text-danger me-2"></i>Bạn có chắc chắn muốn xóa? Thao tác này không thể hoàn tác.</div>
+}
+<form asp-action="Delete" method="post" class="d-flex gap-2">
+    <input type="hidden" name="id" value="@ViewContext.RouteData.Values["id"]" />
+    <button type="submit" class="btn btn-danger" @(blockers.Count > 0 ? "disabled" : "")><i class="fa-regular fa-trash-can me-1"></i> Xóa</button>
+    <a asp-action="Index" class="btn btn-outline-secondary">Quay lại danh sách</a>
+</form>

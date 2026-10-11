@@ -1,0 +1,28 @@
+@model List<NamedCountItem<CoverType>>
+@{
+    ViewData["Title"] = "Hình thức bìa";
+}
+<partial name="_PageHeader" model='new PageHeaderModel(ViewData["Title"]!.ToString()!, "Quản lý danh mục", true)' />
+
+<div class="alert alert-light border small"><i class="fa-solid fa-circle-info text-primary me-2"></i>Bảng Hình thức bìa chỉ có 2 cột (dưới 5 cột) nên không có trang Chi tiết.</div>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 admin-table">
+            <thead><tr><th style="width:80px">Mã</th><th>Hình thức bìa</th><th class="text-center">Số sản phẩm sử dụng</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var x in Model)
+                {
+                    <tr>
+                        <td>@x.Item.CoverTypeId</td>
+                        <td class="fw-500">@x.Item.CoverTypeName</td>
+                        <td class="text-center"><span class="badge bg-primary-subtle text-primary">@x.ProductCount</span></td>
+                        <td class="actions">
+                            <a asp-action="Edit" asp-route-id="@x.Item.CoverTypeId" class="btn btn-outline-primary" title="Sửa"><i class="fa-regular fa-pen-to-square"></i></a>
+                            <a asp-action="Delete" asp-route-id="@x.Item.CoverTypeId" class="btn btn-outline-danger" title="Xóa"><i class="fa-regular fa-trash-can"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

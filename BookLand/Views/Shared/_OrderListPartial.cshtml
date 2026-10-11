@@ -1,0 +1,55 @@
+@model OrderListPartialModel
+@* Danh sách đơn hàng - dùng chung cho Admin (Chi tiết khách hàng, Quản lý đơn hàng) và Lịch sử giao dịch *@
+@if (!Model.Orders.Any())
+{
+    <div class="ol-empty"><i class="fa-solid fa-receipt"></i> Chưa có đơn hàng nào.</div>
+}
+else
+{
+    <div class="ol-wrap">
+        <table class="ol-table">
+            <thead>
+                <tr>
+                    <th>Mã đơn</th>
+                    <th>Ngày đặt</th>
+                    @if (Model.ShowCustomer)
+                    {
+                        <th>Khách hàng</th>
+                    }
+                    <th class="c-qty">Số SP</th>
+                    <th class="c-num">Tổng tiền</th>
+                    @if (Model.ShowPayment)
+                    {
+                        <th>Thanh toán</th>
+                    }
+                    <th>Trạng thái</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var o in Model.Orders)
+                {
+                    string url = Model.ForAdmin
+                        ? Url.Action("Details", "Orders", new { area = "Admin", id = o.OrderId })!
+                        : Url.Action("OrderDetail", "Account", new { area = "", id = o.OrderId })!;
+                    <tr>
+                        <td><b>@o.OrderCode()</b></td>
+                        <td class="c-date">@o.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        @if (Model.ShowCustomer)
+                        {
+                            <td>@o.Customer?.FullName</td>
+                        }
+                        <td class="c-qty">@o.OrderDetails.Sum(d => d.Quantity)</td>
+                        <td class="c-num"><b class="text-red">@o.TotalAmount.ToVnd()</b></td>
+                        @if (Model.ShowPayment)
+                        {
+                            <td>@o.PaymentMethod</td>
+                        }
+                        <td><span class="status-badge @FormatHelper.StatusCss(o.Status)">@o.Status</span></td>
+                        <td><a class="ol-link" href="@url">Xem chi tiết <i class="fa-solid fa-chevron-right"></i></a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

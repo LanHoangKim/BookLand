@@ -1,0 +1,282 @@
+@model HomeViewModel
+@{
+    ViewData["Title"] = "Nhà Sách Trực Tuyến";
+    var parents = (ViewBag.ParentCategories as List<Category>) ?? [];
+    var foreign = parents.FirstOrDefault(c => c.CategoryName.Contains("Foreign"));
+    // Banner trỏ tới danh mục theo tên (không phụ thuộc mã cố định)
+    int? CatId(string name) => parents.FirstOrDefault(c => c.CategoryName.Contains(name))?.CategoryId;
+    var quickColors = new[] { "qc-orange", "qc-pink", "qc-red", "qc-purple", "qc-blue", "qc-green", "qc-teal", "qc-yellow", "qc-indigo", "qc-cyan" };
+}
+
+<div class="container home">
+    <!-- Banner: slider + 2 banner phụ -->
+    <section class="banner home-hero">
+        <div class="hero-slider" data-interval="5000">
+            <div class="hero-track">
+                <a class="hero-slide active" asp-controller="Product" asp-action="Index" asp-route-sort="giam-gia">
+                    <img src="~/images/banners/slide1.jpg" alt="Tháng sách vàng - giảm đến 50%" />
+                </a>
+                <a class="hero-slide" asp-controller="Product" asp-action="Index" asp-route-categoryId="@CatId("Thiếu Nhi")">
+                    <img src="~/images/banners/slide2.jpg" alt="Sách thiếu nhi - quà tặng cho bé" />
+                </a>
+                <a class="hero-slide" asp-controller="Product" asp-action="Index" asp-route-keyword="Tập">
+                    <img src="~/images/banners/slide3.jpg" alt="Manga - Comic mới về" />
+                </a>
+                <a class="hero-slide" asp-controller="Product" asp-action="Index" asp-route-categoryId="@foreign?.CategoryId">
+                    <img src="~/images/banners/slide4.jpg" alt="Foreign Books - up to 15% off" />
+                </a>
+            </div>
+            <button type="button" class="hero-arrow prev" aria-label="Banner trước"><i class="fa-solid fa-chevron-left"></i></button>
+            <button type="button" class="hero-arrow next" aria-label="Banner sau"><i class="fa-solid fa-chevron-right"></i></button>
+            <div class="hero-dots"></div>
+        </div>
+        <div class="hero-side">
+            <a asp-controller="Product" asp-action="Index" asp-route-sort="giam-gia"><img src="~/images/banners/side1.jpg" alt="Giảm 50K cho đơn từ 300K" /></a>
+            <a asp-controller="Product" asp-action="Index" asp-route-sort="ban-chay"><img src="~/images/banners/side2.jpg" alt="Miễn phí vận chuyển đơn từ 300K" /></a>
+        </div>
+    </section>
+
+    <!-- 4 banner khuyến mãi -->
+    <section class="promo-row">
+        <a asp-controller="Product" asp-action="Index" asp-route-categoryId="@CatId("Kinh Tế")"><img src="~/images/banners/promo1.jpg" alt="Sách Kinh Tế ưu đãi" /></a>
+        <a asp-controller="Product" asp-action="Index" asp-route-categoryId="@CatId("Ngoại Ngữ")"><img src="~/images/banners/promo2.jpg" alt="Sách học ngoại ngữ" /></a>
+        <a asp-controller="Product" asp-action="Index" asp-route-categoryId="@CatId("Kỹ Năng")"><img src="~/images/banners/promo3.jpg" alt="Tủ sách kỹ năng" /></a>
+        <a asp-controller="Product" asp-action="Index" asp-route-categoryId="@CatId("Văn Học")"><img src="~/images/banners/promo4.jpg" alt="Văn học kinh điển" /></a>
+    </section>
+
+    <!-- Dải icon lối tắt -->
+    <section class="quick-links">
+        <a href="#flash-sale" class="quick-link"><span class="qc-icon @quickColors[0]"><i class="fa-solid fa-bolt"></i></span>Flash Sale</a>
+        <a asp-controller="Product" asp-action="Index" asp-route-sort="moi-nhat" class="quick-link"><span class="qc-icon @quickColors[1]"><i class="fa-solid fa-wand-magic-sparkles"></i></span>Sách Mới</a>
+        <a asp-controller="Product" asp-action="Index" asp-route-sort="ban-chay" class="quick-link"><span class="qc-icon @quickColors[2]"><i class="fa-solid fa-fire"></i></span>Bán Chạy</a>
+        <a asp-controller="Product" asp-action="Index" asp-route-sort="giam-gia" class="quick-link"><span class="qc-icon @quickColors[3]"><i class="fa-solid fa-tags"></i></span>Giảm Giá Sốc</a>
+        @for (int i = 0; i < Math.Min(6, parents.Count); i++)
+        {
+            var c = parents[i];
+            <a asp-controller="Product" asp-action="Index" asp-route-categoryId="@c.CategoryId" class="quick-link">
+                <span class="qc-icon @quickColors[4 + i]"><i class="fa-solid @ProductQueries.CategoryIcon(c.CategoryName)"></i></span>@c.CategoryName
+            </a>
+        }
+    </section>
+</div>
+
+<!-- FLASH SALE -->
+@if (Model.FlashSale.Count > 0)
+{
+    <section class="flash-sale" id="flash-sale">
+        <div class="container">
+            <div class="flash-header">
+                <div class="flash-title">
+                    <span class="flash-logo">FLA<i class="fa-solid fa-bolt"></i>H SALE</span>
+                    <span class="flash-ends">Kết thúc trong</span>
+                    <span class="countdown" data-countdown>
+                        <b class="cd-h">00</b>:<b class="cd-m">00</b>:<b class="cd-s">00</b>
+                    </span>
+                </div>
+                <a class="see-all" asp-controller="Product" asp-action="Index" asp-route-sort="giam-gia">Xem tất cả <i class="fa-solid fa-chevron-right"></i></a>
+            </div>
+            <div class="scroll-row">
+                <button type="button" class="row-arrow prev" aria-label="Trước"><i class="fa-solid fa-chevron-left"></i></button>
+                <div class="row-track flash-track">
+                    @foreach (var p in Model.FlashSale)
+                    {
+                        <div class="product-item flash-card">
+                            <partial name="_ProductCard" model="p" view-data='new ViewDataDictionary(ViewData) { ["Variant"] = "flash" }' />
+                        </div>
+                    }
+                </div>
+                <button type="button" class="row-arrow next" aria-label="Sau"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </section>
+}
+
+<div class="container home">
+    <!-- DANH MỤC SẢN PHẨM -->
+    <section class="section-box">
+        <div class="section-head">
+            <h2><i class="fa-solid fa-table-cells-large section-icon"></i> Danh mục sản phẩm</h2>
+        </div>
+        <div class="category-tiles">
+            @foreach (var c in Model.CategoryTiles)
+            {
+                <a class="category-tile" asp-controller="Product" asp-action="Index" asp-route-categoryId="@c.CategoryId">
+                    <span class="tile-img"><img src="@c.ImageUrl" alt="@c.Name" loading="lazy" /></span>
+                    <span class="tile-name">@c.Name</span>
+                </a>
+            }
+        </div>
+    </section>
+
+    <!-- XU HƯỚNG MUA SẮM -->
+    <section class="section-box trend-box tabs" data-tabs>
+        <div class="section-head pink">
+            <h2><span class="trend-icon"><i class="fa-solid fa-arrow-trend-up"></i></span> Xu Hướng Mua Sắm</h2>
+        </div>
+        <div class="tab-bar">
+            <button type="button" class="tab-btn active" data-tab="trend-daily">Xu Hướng Theo Ngày</button>
+            <button type="button" class="tab-btn" data-tab="trend-hot">Sách HOT - Giảm Sốc</button>
+            @if (Model.ForeignBestsellers.Count > 0)
+            {
+                <button type="button" class="tab-btn" data-tab="trend-foreign">Bestseller Ngoại Văn</button>
+            }
+        </div>
+        <div class="tab-panel active" id="trend-daily">
+            <div class="product-grid cols-5">
+                @foreach (var p in Model.TrendingDaily)
+                {
+                    <div class="product-item"><partial name="_ProductCard" model="p" /></div>
+                }
+            </div>
+            <div class="more-wrap"><a class="btn-more" asp-controller="Product" asp-action="Index" asp-route-sort="ban-chay">Xem Thêm</a></div>
+        </div>
+        <div class="tab-panel" id="trend-hot">
+            <div class="product-grid cols-5">
+                @foreach (var p in Model.HotDeals)
+                {
+                    <div class="product-item"><partial name="_ProductCard" model="p" /></div>
+                }
+            </div>
+            <div class="more-wrap"><a class="btn-more" asp-controller="Product" asp-action="Index" asp-route-sort="giam-gia">Xem Thêm</a></div>
+        </div>
+        @if (Model.ForeignBestsellers.Count > 0)
+        {
+            <div class="tab-panel" id="trend-foreign">
+                <div class="product-grid cols-5">
+                    @foreach (var p in Model.ForeignBestsellers)
+                    {
+                        <div class="product-item"><partial name="_ProductCard" model="p" /></div>
+                    }
+                </div>
+                <div class="more-wrap"><a class="btn-more" asp-controller="Product" asp-action="Index" asp-route-categoryId="@foreign?.CategoryId">Xem Thêm</a></div>
+            </div>
+        }
+    </section>
+
+    <!-- SẢN PHẨM NỔI BẬT -->
+    @if (Model.Featured.Count > 0)
+    {
+        <section class="featured-products section-box gold-box">
+            <div class="section-head gold">
+                <span class="gold-icon"><i class="fa-regular fa-gem"></i></span>
+                <div class="gold-text">
+                    <h2>Sản phẩm nổi bật <span class="gold-badge">TUYỂN CHỌN</span></h2>
+                    <p>Những đầu sách được @StoreInfo.Name tuyển chọn, được độc giả yêu thích và đánh giá cao.</p>
+                </div>
+                <a class="see-all dark" asp-controller="Product" asp-action="Index" asp-route-sort="ban-chay">Xem thêm <i class="fa-solid fa-chevron-right"></i></a>
+            </div>
+            <div class="scroll-row">
+                <button type="button" class="row-arrow prev" aria-label="Trước"><i class="fa-solid fa-chevron-left"></i></button>
+                <div class="row-track product-container">
+                    @foreach (var p in Model.Featured)
+                    {
+                        <div class="product-item featured-card"><partial name="_ProductCard" model="p" /></div>
+                    }
+                </div>
+                <button type="button" class="row-arrow next" aria-label="Sau"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </section>
+    }
+
+    <!-- BEST SELLERS -->
+    @if (Model.BestSellerGroups.Count > 0)
+    {
+        <section class="section-box bestseller-box tabs" data-tabs>
+            <div class="section-head">
+                <h2><i class="fa-solid fa-fire-flame-curved section-icon red"></i> Best Sellers</h2>
+            </div>
+            <div class="tab-bar scrollable">
+                @for (int g = 0; g < Model.BestSellerGroups.Count; g++)
+                {
+                    <button type="button" class="tab-btn @(g == 0 ? "active" : "")" data-tab="bs-@Model.BestSellerGroups[g].CategoryId">@Model.BestSellerGroups[g].CategoryName</button>
+                }
+            </div>
+            @for (int g = 0; g < Model.BestSellerGroups.Count; g++)
+            {
+                var group = Model.BestSellerGroups[g];
+                <div class="tab-panel @(g == 0 ? "active" : "")" id="bs-@group.CategoryId">
+                    <div class="bs-layout">
+                        <ol class="bs-list">
+                            @for (int i = 0; i < group.Products.Count; i++)
+                            {
+                                var p = group.Products[i];
+                                <li class="bs-item @(i == 0 ? "active" : "")" data-preview="bsp-@group.CategoryId-@p.ProductId">
+                                    <span class="bs-rank">@(i + 1)</span>
+                                    <img src="@p.ImageUrl" alt="@p.ProductName" loading="lazy" />
+                                    <div class="bs-item-info">
+                                        <span class="bs-top @(i < 3 ? "hot" : "")"><i class="fa-solid fa-fire-flame-curved"></i> Top @(i + 1)</span>
+                                        <div class="bs-item-name">@p.ProductName</div>
+                                        <div class="bs-item-sold">Đã bán @p.ProductDetail!.SoldQuantity.ToNumber()</div>
+                                    </div>
+                                </li>
+                            }
+                        </ol>
+                        <div class="bs-previews">
+                            @for (int i = 0; i < group.Products.Count; i++)
+                            {
+                                var p = group.Products[i];
+                                int discount = p.DiscountPercent();
+                                <div class="bs-preview @(i == 0 ? "active" : "")" id="bsp-@group.CategoryId-@p.ProductId">
+                                    <div class="bs-preview-top">
+                                        <a class="bs-preview-img" asp-controller="Product" asp-action="Detail" asp-route-id="@p.ProductId"><img src="@p.ImageUrl" alt="@p.ProductName" loading="lazy" /></a>
+                                        <div class="bs-preview-info">
+                                            <a class="bs-preview-name" asp-controller="Product" asp-action="Detail" asp-route-id="@p.ProductId">@p.ProductName</a>
+                                            <div class="bs-preview-sold">Đã bán @p.ProductDetail!.SoldQuantity.ToNumber()</div>
+                                            <div class="bs-preview-meta">
+                                                @if (p.Author != null)
+                                                {
+                                                    <span><i class="fa-regular fa-user"></i> Tác giả: <b>@p.Author.AuthorName</b></span>
+                                                }
+                                                @if (p.Publisher != null)
+                                                {
+                                                    <span><i class="fa-solid fa-book-open"></i> NXB: <b>@p.Publisher.PublisherName</b></span>
+                                                }
+                                            </div>
+                                            <div class="bs-preview-price">
+                                                <span class="price">@p.Price.ToVnd()</span>
+                                                @if (discount > 0)
+                                                {
+                                                    <span class="old">@p.OriginalPrice.ToVnd()</span>
+                                                    <span class="pi-discount">-@discount%</span>
+                                                }
+                                            </div>
+                                            <form asp-controller="Cart" asp-action="Add" method="post">
+                                                <input type="hidden" name="productId" value="@p.ProductId" />
+                                                <input type="hidden" name="quantity" value="1" />
+                                                <button type="submit" class="btn-red btn-block"><i class="fa-solid fa-cart-shopping"></i> Thêm vào giỏ hàng</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="bs-preview-desc">
+                                        <h4>Mô tả sản phẩm</h4>
+                                        <div class="bs-desc-title">@p.ProductName.ToUpper()</div>
+                                        <p>@p.Description</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </section>
+    }
+
+    <!-- Banner lớn -->
+    <a class="wide-banner" asp-controller="Product" asp-action="Index" asp-route-keyword="Nguyễn Nhật Ánh">
+        <img src="~/images/banners/wide1.jpg" alt="Tủ sách Nguyễn Nhật Ánh" loading="lazy" />
+    </a>
+
+    <!-- DANH SÁCH SẢN PHẨM: SÁCH MỚI -->
+    <section class="product-list section-box">
+        <div class="tab-bar single">
+            <h2 class="tab-btn active">Sách Mới Phát Hành</h2>
+        </div>
+        <ul class="list-container product-grid cols-5">
+            @foreach (var p in Model.NewArrivals)
+            {
+                <li class="product-item"><partial name="_ProductCard" model="p" /></li>
+            }
+        </ul>
+        <div class="more-wrap"><a class="btn-more" asp-controller="Product" asp-action="Index" asp-route-sort="moi-nhat">Xem Thêm</a></div>
+    </section>
+</div>

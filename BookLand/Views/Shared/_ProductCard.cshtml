@@ -1,0 +1,42 @@
+@model Product
+@{
+    // Nội dung 1 thẻ sản phẩm; phần tử bao ngoài (div/li .product-item) do view cha tạo
+    bool flash = ViewData["Variant"] as string == "flash";
+    int discount = Model.DiscountPercent();
+    int sold = Model.ProductDetail?.SoldQuantity ?? 0;
+    int stock = Model.StockQuantity();
+    // Thanh Flash Sale: còn càng ít hàng thì thanh càng đầy
+    int soldPercent = Math.Clamp(100 - stock, 8, 96);
+}
+<a class="pi-thumb" asp-controller="Product" asp-action="Detail" asp-route-id="@Model.ProductId" title="@Model.ProductName">
+    <img src="@(Model.ImageUrl ?? "/images/no-image.png")" alt="@Model.ProductName" loading="lazy" />
+</a>
+<div class="pi-info">
+    <h3 class="pi-name">
+        <a asp-controller="Product" asp-action="Detail" asp-route-id="@Model.ProductId">@Model.ProductName</a>
+    </h3>
+    <div class="pi-price-row">
+        <p class="price">@Model.Price.ToVnd()</p>
+        @if (discount > 0)
+        {
+            <span class="pi-discount">-@discount%</span>
+        }
+    </div>
+    <div class="pi-old-price">@(discount > 0 ? Model.OriginalPrice.ToVnd() : "")</div>
+    @if (flash)
+    {
+        <div class="pi-progress">
+            <div class="pi-progress-bar" style="width:@(Math.Max(soldPercent, 6))%"></div>
+            <span>@(stock <= 10 ? "Sắp hết" : "Đã bán " + sold.ToShortCount())</span>
+        </div>
+    }
+    else
+    {
+        <div class="pi-sold">Đã bán @sold.ToShortCount()</div>
+    }
+    <form class="pi-buy" asp-controller="Cart" asp-action="Add" method="post">
+        <input type="hidden" name="productId" value="@Model.ProductId" />
+        <input type="hidden" name="quantity" value="1" />
+        <button type="submit" class="pi-cart-btn" title="Thêm vào giỏ hàng"><i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ</button>
+    </form>
+</div>

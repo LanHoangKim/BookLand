@@ -1,0 +1,15 @@
+@model Product
+@{
+    ViewData["Title"] = "Sửa sản phẩm";
+}
+<partial name="_PageHeader" model='new PageHeaderModel(ViewData["Title"]!.ToString()!, "Sản phẩm")' />
+<div class="card">
+    <form asp-action="Edit" method="post" enctype="multipart/form-data" class="card-body" novalidate>
+        <input type="hidden" asp-for="ProductId" />
+        <partial name="_Form" model="Model" />
+        <hr />
+        <button type="submit" class="btn btn-brand"><i class="fa-solid fa-floppy-disk me-1"></i> Lưu thay đổi</button>
+        <a asp-action="Details" asp-route-id="@Model.ProductId" class="btn btn-outline-secondary">Hủy</a>
+    </form>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

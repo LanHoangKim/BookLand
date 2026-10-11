@@ -1,0 +1,14 @@
+@model Category
+@{
+    ViewData["Title"] = "Thêm danh mục";
+}
+<partial name="_PageHeader" model='new PageHeaderModel(ViewData["Title"]!.ToString()!, "Danh mục sản phẩm")' />
+<div class="card">
+    <form asp-action="Create" method="post" enctype="multipart/form-data" class="card-body" novalidate>
+        <partial name="_Form" model="Model" />
+        <hr />
+        <button type="submit" class="btn btn-brand"><i class="fa-solid fa-floppy-disk me-1"></i> Lưu</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Hủy</a>
+    </form>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

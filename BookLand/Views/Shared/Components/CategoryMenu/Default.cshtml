@@ -1,0 +1,52 @@
+@model List<MenuCategory>
+
+<div class="cat-menu">
+    <button type="button" class="cat-toggle" aria-label="Danh mục sản phẩm" aria-expanded="false">
+        <i class="fa-solid fa-table-cells-large"></i>
+        <i class="fa-solid fa-chevron-down cat-chevron"></i>
+    </button>
+
+    <div class="cat-dropdown">
+        <nav class="main-menu cat-dropdown-left">
+            <div class="cat-dropdown-title">Danh mục sản phẩm</div>
+            <ul>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    var parent = Model[i];
+                    <li class="cat-parent @(i == 0 ? "active" : "")" data-panel="cat-panel-@parent.Category.CategoryId">
+                        <a asp-controller="Product" asp-action="Index" asp-route-categoryId="@parent.Category.CategoryId">
+                            <i class="fa-solid @parent.Icon"></i> @parent.Category.CategoryName
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+
+        <div class="cat-dropdown-right">
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                var parent = Model[i];
+                <div class="cat-panel @(i == 0 ? "active" : "")" id="cat-panel-@parent.Category.CategoryId">
+                    <div class="cat-panel-title">
+                        <i class="fa-solid @parent.Icon"></i> @parent.Category.CategoryName
+                    </div>
+                    <div class="cat-panel-grid">
+                        @foreach (var child in parent.Children)
+                        {
+                            <div class="cat-col">
+                                <a class="cat-col-title" asp-controller="Product" asp-action="Index" asp-route-categoryId="@child.Category.CategoryId">@child.Category.CategoryName</a>
+                                <ul>
+                                    @foreach (var p in child.Products)
+                                    {
+                                        <li><a asp-controller="Product" asp-action="Detail" asp-route-id="@p.ProductId">@p.ProductName</a></li>
+                                    }
+                                </ul>
+                                <a class="cat-col-more" asp-controller="Product" asp-action="Index" asp-route-categoryId="@child.Category.CategoryId">Xem tất cả</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,45 @@
+@model List<CategoryIndexItem>
+@{
+    ViewData["Title"] = "Danh mục sản phẩm";
+}
+
+<partial name="_PageHeader" model='new PageHeaderModel(ViewData["Title"]!.ToString()!, "Quản lý danh mục", true)' />
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 admin-table">
+            <thead>
+                <tr>
+                    <th style="width:60px">Mã</th>
+                    <th style="width:70px">Ảnh</th>
+                    <th>Tên danh mục</th>
+                    <th>Danh mục cha</th>
+                    <th class="text-center">Tổng số hàng hóa</th>
+                    <th class="text-center">Thứ tự</th>
+                    <th class="text-center">Hiển thị</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    var c = item.Category;
+                    <tr class="@(c.ParentId == null ? "cat-parent-row" : "cat-child")">
+                        <td>@c.CategoryId</td>
+                        <td><img src="@c.ImageUrl" class="thumb" alt="" /></td>
+                        <td>@(c.ParentId == null ? "" : "└ ")@c.CategoryName</td>
+                        <td>@(c.Parent?.CategoryName ?? "—")</td>
+                        <td class="text-center"><span class="badge bg-primary-subtle text-primary fs-6">@item.ProductCount</span></td>
+                        <td class="text-center">@c.SortOrder</td>
+                        <td class="text-center">@(c.IsActive ? Html.Raw("<i class='fa-solid fa-circle-check text-success'></i>") : Html.Raw("<i class='fa-solid fa-circle-xmark text-secondary'></i>"))</td>
+                        <td class="actions">
+                            <a asp-action="Details" asp-route-id="@c.CategoryId" class="btn btn-outline-secondary" title="Chi tiết"><i class="fa-regular fa-eye"></i></a>
+                            <a asp-action="Edit" asp-route-id="@c.CategoryId" class="btn btn-outline-primary" title="Sửa"><i class="fa-regular fa-pen-to-square"></i></a>
+                            <a asp-action="Delete" asp-route-id="@c.CategoryId" class="btn btn-outline-danger" title="Xóa"><i class="fa-regular fa-trash-can"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

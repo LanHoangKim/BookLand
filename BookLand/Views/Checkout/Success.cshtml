@@ -1,0 +1,19 @@
+@model Order
+@{
+    ViewData["Title"] = "Đặt hàng thành công";
+}
+
+<div class="container success-page">
+    <div class="box success-box">
+        <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
+        <h1>Đặt hàng thành công!</h1>
+        <p>Cảm ơn bạn đã mua sắm tại @StoreInfo.Name. Mã đơn hàng của bạn là <b>@Model.OrderCode()</b>.</p>
+        <p class="muted">Chúng tôi sẽ liên hệ xác nhận đơn hàng qua số điện thoại <b>@Model.ReceiverPhone</b>.</p>
+        <div class="success-actions">
+            <a class="btn-outline-red" asp-controller="Account" asp-action="Orders"><i class="fa-solid fa-receipt"></i> Lịch sử giao dịch</a>
+            <a class="btn-red" asp-controller="Home" asp-action="Index">Tiếp tục mua sắm</a>
+        </div>
+    </div>
+
+    <partial name="_InvoicePartial" model="Model" />
+</div>

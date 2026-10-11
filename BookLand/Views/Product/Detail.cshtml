@@ -1,0 +1,36 @@
+@model ProductDetailPageViewModel
+@{
+    ViewData["Title"] = Model.Product.ProductName;
+}
+
+<div class="container detail-page">
+    <nav class="breadcrumb" aria-label="breadcrumb">
+        <a asp-controller="Home" asp-action="Index">Trang chủ</a>
+        @foreach (var c in Model.Breadcrumb)
+        {
+            <i class="fa-solid fa-chevron-right"></i>
+            <a asp-action="Index" asp-route-categoryId="@c.CategoryId">@c.CategoryName</a>
+        }
+    </nav>
+
+    <partial name="_ProductDetailPartial" model="new ProductDetailPartialModel { Product = Model.Product, ShowPurchase = true }" />
+
+    @if (Model.Related.Count > 0)
+    {
+        <section class="section-box related-box">
+            <div class="section-head">
+                <h2><i class="fa-solid fa-book-bookmark section-icon red"></i> Sản phẩm liên quan</h2>
+            </div>
+            <div class="scroll-row">
+                <button type="button" class="row-arrow prev" aria-label="Trước"><i class="fa-solid fa-chevron-left"></i></button>
+                <div class="row-track">
+                    @foreach (var p in Model.Related)
+                    {
+                        <div class="product-item"><partial name="_ProductCard" model="p" /></div>
+                    }
+                </div>
+                <button type="button" class="row-arrow next" aria-label="Sau"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </section>
+    }
+</div>

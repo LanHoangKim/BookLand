@@ -1,0 +1,99 @@
+@model CartViewModel
+@{
+    ViewData["Title"] = "Giỏ hàng";
+    decimal remainToFreeShip = Math.Max(0, CartRules.FreeShipThreshold - Model.Subtotal);
+    int freeShipPercent = (int)Math.Min(100, Model.Subtotal * 100 / CartRules.FreeShipThreshold);
+}
+
+<div class="container cart-page" data-cart-page>
+    @Html.AntiForgeryToken()
+    <h1 class="page-title">GIỎ HÀNG <span>(<span class="cart-lines">@Model.TotalQuantity</span> sản phẩm)</span></h1>
+
+    @foreach (var w in Model.Warnings)
+    {
+        <div class="alert alert-warning"><i class="fa-solid fa-triangle-exclamation"></i> @w</div>
+    }
+
+    <div class="box cart-empty" id="cart-empty" @(Model.IsEmpty ? "" : "hidden")>
+        <div class="empty-illus"><i class="fa-solid fa-bag-shopping"></i><span>Z</span><span>z</span></div>
+        <p>Chưa có sản phẩm trong giỏ hàng của bạn.</p>
+        <a class="btn-red btn-wide" asp-controller="Home" asp-action="Index">MUA SẮM NGAY</a>
+    </div>
+
+    @if (!Model.IsEmpty)
+    {
+        <div class="cart-layout" id="cart-layout">
+            <div class="cart-left">
+                <div class="box cart-head">
+                    <span class="ch-product">Sản phẩm (<span class="cart-items-count">@Model.Items.Count</span>)</span>
+                    <span class="ch-qty">Số lượng</span>
+                    <span class="ch-total">Thành tiền</span>
+                    <span class="ch-remove"></span>
+                </div>
+                <div class="box cart-items">
+                    @foreach (var item in Model.Items)
+                    {
+                        <div class="cart-item" data-id="@item.ProductId">
+                            <a class="ci-img" asp-controller="Product" asp-action="Detail" asp-route-id="@item.ProductId">
+                                <img src="@item.ImageUrl" alt="@item.ProductName" />
+                            </a>
+                            <div class="ci-info">
+                                <a class="ci-name" asp-controller="Product" asp-action="Detail" asp-route-id="@item.ProductId">@item.ProductName</a>
+                                <div class="ci-price">
+                                    <b>@item.Price.ToVnd()</b>
+                                    @if (item.OriginalPrice > item.Price)
+                                    {
+                                        <s>@item.OriginalPrice.ToVnd()</s>
+                                    }
+                                </div>
+                                <div class="ci-stock">Còn @item.Stock sản phẩm</div>
+                            </div>
+                            <div class="ci-qty">
+                                <form asp-action="Update" method="post" class="qty-form">
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                    <div class="qty-stepper" data-max="@item.Stock">
+                                        <button type="button" class="qty-minus" aria-label="Giảm"><i class="fa-solid fa-minus"></i></button>
+                                        <input type="number" name="quantity" class="qty-input" value="@item.Quantity" min="1" max="@item.Stock" aria-label="Số lượng" />
+                                        <button type="button" class="qty-plus" aria-label="Tăng"><i class="fa-solid fa-plus"></i></button>
+                                    </div>
+                                    <noscript><button type="submit" class="btn-link">Cập nhật</button></noscript>
+                                </form>
+                                <div class="ci-msg" role="alert"></div>
+                            </div>
+                            <div class="ci-total">@item.LineTotal.ToVnd()</div>
+                            <form asp-action="Remove" method="post" class="remove-form">
+                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                <button type="submit" class="ci-remove" title="Xóa khỏi giỏ hàng" aria-label="Xóa"><i class="fa-regular fa-trash-can"></i></button>
+                            </form>
+                        </div>
+                    }
+                </div>
+                <a class="continue-link" asp-controller="Product" asp-action="Index"><i class="fa-solid fa-arrow-left-long"></i> Tiếp tục mua hàng</a>
+            </div>
+
+            <div class="cart-right">
+                <div class="box promo-box">
+                    <div class="promo-title"><i class="fa-solid fa-ticket"></i> KHUYẾN MÃI</div>
+                    <p class="freeship-text" id="freeship-text">
+                        @if (remainToFreeShip > 0)
+                        {
+                            <text>Mua thêm <b>@remainToFreeShip.ToVnd()</b> để được miễn phí vận chuyển</text>
+                        }
+                        else
+                        {
+                            <text>Đơn hàng đã được <b>miễn phí vận chuyển</b></text>
+                        }
+                    </p>
+                    <div class="freeship-bar"><div id="freeship-progress" style="width:@freeShipPercent%"></div></div>
+                </div>
+                <div class="box summary-box">
+                    <div class="sum-row"><span>Thành tiền</span><span id="cart-subtotal">@Model.Subtotal.ToVnd()</span></div>
+                    <div class="sum-row"><span>Phí vận chuyển (Giao hàng tiêu chuẩn)</span><span id="cart-shipping">@(Model.ShippingFee == 0 ? "Miễn phí" : Model.ShippingFee.ToVnd())</span></div>
+                    <div class="sum-total"><span>Tổng Số Tiền (gồm VAT)</span><span id="cart-total">@Model.Total.ToVnd()</span></div>
+                    <a id="checkout-btn" class="btn-red btn-block btn-lg" asp-controller="Checkout" asp-action="Index">THANH TOÁN</a>
+                    <p class="sum-note">(Giảm giá trên web chỉ áp dụng cho bán lẻ)</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>

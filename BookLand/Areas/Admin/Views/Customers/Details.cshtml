@@ -1,0 +1,36 @@
+@model Customer
+@{
+    ViewData["Title"] = "Chi tiết khách hàng";
+    var orders = Model.Orders.OrderByDescending(o => o.OrderDate).ToList();
+}
+<partial name="_PageHeader" model='new PageHeaderModel(ViewData["Title"]!.ToString()!, "Quản lý khách hàng")' />
+
+<div class="row g-3">
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fa-solid fa-circle-user text-brand" style="font-size:64px"></i>
+                <h5 class="mt-2 mb-0">@Model.FullName</h5>
+                <div class="text-muted small">Khách hàng #@Model.CustomerId</div>
+            </div>
+            <table class="table info-table mb-0">
+                <tr><th style="width:120px">Email</th><td>@Model.Email</td></tr>
+                <tr><th>Điện thoại</th><td>@Model.Phone</td></tr>
+                <tr><th>Giới tính</th><td>@(Model.Gender ?? "—")</td></tr>
+                <tr><th>Ngày sinh</th><td>@(Model.BirthDate?.ToString("dd/MM/yyyy") ?? "—")</td></tr>
+                <tr><th>Địa chỉ</th><td>@(Model.Address ?? "—")</td></tr>
+                <tr><th>Ngày đăng ký</th><td>@Model.CreatedAt.ToString("dd/MM/yyyy")</td></tr>
+                <tr><th>Tổng chi tiêu</th><td class="fw-bold text-brand">@orders.Where(o => o.Status != OrderStatuses.Cancelled).Sum(o => o.TotalAmount).ToVnd()</td></tr>
+            </table>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card h-100">
+            <div class="card-header fw-bold"><i class="fa-solid fa-receipt me-2 text-brand"></i>Danh sách đơn hàng của khách hàng (@orders.Count)</div>
+            <div class="card-body p-0">
+                <partial name="_OrderListPartial" model="new OrderListPartialModel { Orders = orders, ForAdmin = true }" />
+            </div>
+        </div>
+    </div>
+</div>
+<div class="mt-3"><a asp-action="Index" class="btn btn-outline-secondary">Quay lại danh sách</a></div>

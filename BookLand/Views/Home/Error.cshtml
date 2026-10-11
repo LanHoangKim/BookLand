@@ -1,0 +1,12 @@
+@{
+    ViewData["Title"] = "Lỗi";
+}
+
+<div class="container">
+    <div class="box status-box">
+        <div class="status-code">500</div>
+        <h1>Đã có lỗi xảy ra trong quá trình xử lý</h1>
+        <p class="muted">Mã yêu cầu: <code>@ViewBag.RequestId</code></p>
+        <a class="btn-red btn-wide" asp-area="" asp-controller="Home" asp-action="Index">VỀ TRANG CHỦ</a>
+    </div>
+</div>

@@ -1,0 +1,23 @@
+@model Supplier
+@{
+    ViewData["Title"] = "Chi tiết nhà cung cấp";
+    var products = ViewBag.Products as List<Product> ?? [];
+}
+<partial name="_PageHeader" model='new PageHeaderModel(ViewData["Title"]!.ToString()!, "Nhà cung cấp")' />
+<div class="card">
+    <div class="card-body">
+        <table class="table table-borderless info-table mb-0" style="max-width:800px">
+            <tr><th>Mã</th><td>@Model.SupplierId</td></tr>
+            <tr><th>Tên nhà cung cấp</th><td class="fw-bold">@Model.SupplierName</td></tr>
+            <tr><th>Địa chỉ</th><td>@(Model.Address ?? "—")</td></tr>
+            <tr><th>Điện thoại</th><td>@(Model.Phone ?? "—")</td></tr>
+            <tr><th>Email</th><td>@(Model.Email ?? "—")</td></tr>
+            <tr><th>Website</th><td>@(Model.Website ?? "—")</td></tr>
+        </table>
+    </div>
+    <div class="card-footer bg-white">
+        <a asp-action="Edit" asp-route-id="@Model.SupplierId" class="btn btn-outline-primary"><i class="fa-regular fa-pen-to-square me-1"></i>Sửa</a>
+        <a asp-action="Index" class="btn btn-outline-secondary">Quay lại danh sách</a>
+    </div>
+</div>
+<partial name="_RelatedProducts" model="products" />

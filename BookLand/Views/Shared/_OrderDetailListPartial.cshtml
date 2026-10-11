@@ -1,0 +1,37 @@
+@model IEnumerable<OrderDetail>
+@* Danh sách chi tiết đơn hàng, nhúng vào hóa đơn (_InvoicePartial) *@
+<table class="inv-table">
+    <thead>
+        <tr>
+            <th class="c-no">STT</th>
+            <th>Sản phẩm</th>
+            <th class="c-num">Đơn giá</th>
+            <th class="c-qty">Số lượng</th>
+            <th class="c-num">Thành tiền</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ int no = 1; }
+        @foreach (var d in Model)
+        {
+            <tr>
+                <td class="c-no">@(no++)</td>
+                <td>
+                    <div class="inv-product">
+                        <img src="@d.Product?.ImageUrl" alt="" />
+                        <div>
+                            <div class="inv-product-name">@d.Product?.ProductName</div>
+                            @if (d.Product?.ProductDetail?.Sku != null)
+                            {
+                                <div class="inv-sku">Mã hàng: @d.Product.ProductDetail.Sku</div>
+                            }
+                        </div>
+                    </div>
+                </td>
+                <td class="c-num">@d.UnitPrice.ToVnd()</td>
+                <td class="c-qty">@d.Quantity</td>
+                <td class="c-num"><b>@d.Amount.ToVnd()</b></td>
+            </tr>
+        }
+    </tbody>
+</table>

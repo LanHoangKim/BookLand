@@ -1,0 +1,11 @@
+@model CoverType
+@{
+    ViewData["Title"] = "Xóa hình thức bìa";
+}
+<partial name="_PageHeader" model='new PageHeaderModel(ViewData["Title"]!.ToString()!, "Hình thức bìa")' />
+<div class="card">
+    <div class="card-body">
+        <p class="fs-5">Hình thức bìa: <b>@Model.CoverTypeName</b></p>
+        <partial name="_DeleteGuard" />
+    </div>
+</div>

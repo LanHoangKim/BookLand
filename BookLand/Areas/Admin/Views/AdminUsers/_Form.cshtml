@@ -1,0 +1,38 @@
+@model AdminUserFormViewModel
+@{
+    bool isCreate = Model.AdminId == 0;
+}
+<div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+<div class="row" style="max-width:860px">
+    <div class="col-md-6 mb-3">
+        <label asp-for="Username" class="form-label"><span class="req">*</span></label>
+        <input asp-for="Username" class="form-control" autocomplete="off" />
+        <span asp-validation-for="Username" class="text-danger field"></span>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="FullName" class="form-label"><span class="req">*</span></label>
+        <input asp-for="FullName" class="form-control" />
+        <span asp-validation-for="FullName" class="text-danger field"></span>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" type="email" />
+        <span asp-validation-for="Email" class="text-danger field"></span>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="Role" class="form-label"><span class="req">*</span></label>
+        <select asp-for="Role" class="form-select" asp-items="@(new SelectList(AdminRoles.All))"></select>
+        <span asp-validation-for="Role" class="text-danger field"></span>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="Password" class="form-label">@(isCreate ? Html.Raw("Mật khẩu <span class='req'>*</span>") : Html.Raw("Mật khẩu mới"))</label>
+        <input asp-for="Password" class="form-control" autocomplete="new-password" />
+        <span asp-validation-for="Password" class="text-danger field"></span>
+        @if (!isCreate) { <div class="form-text">Để trống nếu không đổi mật khẩu.</div> }
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="ConfirmPassword" class="form-label"></label>
+        <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" />
+        <span asp-validation-for="ConfirmPassword" class="text-danger field"></span>
+    </div>
+</div>

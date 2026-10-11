@@ -1,0 +1,24 @@
+@model Author
+<div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="AuthorName" class="form-label"><span class="req">*</span></label>
+        <input asp-for="AuthorName" class="form-control" />
+        <span asp-validation-for="AuthorName" class="text-danger field"></span>
+    </div>
+    <div class="col-md-3 mb-3">
+        <label asp-for="Nationality" class="form-label"></label>
+        <input asp-for="Nationality" class="form-control" />
+        <span asp-validation-for="Nationality" class="text-danger field"></span>
+    </div>
+    <div class="col-md-3 mb-3">
+        <label asp-for="BirthYear" class="form-label"></label>
+        <input asp-for="BirthYear" class="form-control" type="number" />
+        <span asp-validation-for="BirthYear" class="text-danger field"></span>
+    </div>
+</div>
+<div class="mb-3">
+    <label asp-for="Biography" class="form-label"></label>
+    <textarea asp-for="Biography" class="form-control" rows="4"></textarea>
+    <span asp-validation-for="Biography" class="text-danger field"></span>
+</div>

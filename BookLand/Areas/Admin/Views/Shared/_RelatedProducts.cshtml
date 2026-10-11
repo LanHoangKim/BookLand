@@ -1,0 +1,35 @@
+@model IEnumerable<Product>
+@* Danh sách sản phẩm liên quan, dùng ở trang Details của Danh mục / Tác giả / NXB / Nhà cung cấp *@
+<div class="card mt-3">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span class="fw-bold"><i class="fa-solid fa-book me-2 text-brand"></i>Danh sách sản phẩm liên quan</span>
+        <span class="badge bg-secondary">@Model.Count() sản phẩm</span>
+    </div>
+    @if (!Model.Any())
+    {
+        <div class="card-body text-muted">Chưa có sản phẩm nào.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 admin-table">
+                <thead>
+                    <tr><th style="width:70px">Ảnh</th><th>Tên sản phẩm</th><th>Danh mục</th><th class="text-end">Giá bán</th><th class="text-center">Tồn kho</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model)
+                    {
+                        <tr>
+                            <td><img src="@p.ImageUrl" class="thumb" alt="" /></td>
+                            <td>@p.ProductName</td>
+                            <td>@p.Category?.CategoryName</td>
+                            <td class="text-end">@p.Price.ToVnd()</td>
+                            <td class="text-center"><span class="badge @(p.StockQuantity() > 0 ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger")">@p.StockQuantity()</span></td>
+                            <td class="text-end"><a asp-controller="Products" asp-action="Details" asp-route-id="@p.ProductId" class="btn btn-sm btn-outline-secondary">Xem</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

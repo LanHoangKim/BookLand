@@ -1,0 +1,20 @@
+@model Product
+@{
+    ViewData["Title"] = "Xóa sản phẩm";
+}
+<partial name="_PageHeader" model='new PageHeaderModel(ViewData["Title"]!.ToString()!, "Sản phẩm")' />
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex gap-4 flex-wrap mb-3">
+            <img src="@Model.ImageUrl" class="img-preview" alt="" />
+            <table class="table table-borderless info-table mb-0" style="max-width:640px">
+                <tr><th>Tên sản phẩm</th><td class="fw-bold">@Model.ProductName</td></tr>
+                <tr><th>Danh mục</th><td>@Model.Category.CategoryName</td></tr>
+                <tr><th>Giá bán</th><td>@Model.Price.ToVnd()</td></tr>
+                <tr><th>Số lượng tồn</th><td>@Model.StockQuantity()</td></tr>
+                <tr><th>Dữ liệu xóa kèm</th><td>Chi tiết sản phẩm và @Model.ProductImages.Count ảnh phụ</td></tr>
+            </table>
+        </div>
+        <partial name="_DeleteGuard" />
+    </div>
+</div>

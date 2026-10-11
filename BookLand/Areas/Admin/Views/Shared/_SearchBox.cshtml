@@ -1,0 +1,8 @@
+@model string?
+<form method="get" class="search-inline">
+    <div class="input-group">
+        <span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+        <input type="text" name="search" value="@Model" class="form-control" placeholder="@(ViewData["Placeholder"] ?? "Tìm kiếm...")" />
+        <button class="btn btn-outline-secondary" type="submit">Tìm</button>
+    </div>
+</form>

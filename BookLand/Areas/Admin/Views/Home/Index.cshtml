@@ -1,0 +1,104 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Tổng quan";
+    decimal maxRevenue = Model.RevenueByMonth.Count == 0 ? 1 : Math.Max(1, Model.RevenueByMonth.Max(r => r.Value));
+}
+
+<div class="page-head">
+    <div>
+        <h1>Xin chào, @User.Identity?.Name</h1>
+        <nav class="crumbs"><span>Tổng quan hoạt động của cửa hàng</span></nav>
+    </div>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-6 col-xl-3">
+        <div class="stat-card stat-red">
+            <div><div class="label">Doanh thu (không tính đơn hủy)</div><div class="value">@Model.Revenue.ToVnd()</div></div>
+            <i class="fa-solid fa-sack-dollar"></i>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <a asp-controller="Orders" asp-action="Index" class="text-decoration-none">
+            <div class="stat-card stat-blue">
+                <div><div class="label">Đơn hàng (@Model.PendingOrders chờ xác nhận)</div><div class="value">@Model.OrderCount</div></div>
+                <i class="fa-solid fa-receipt"></i>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <a asp-controller="Customers" asp-action="Index" class="text-decoration-none">
+            <div class="stat-card stat-green">
+                <div><div class="label">Khách hàng</div><div class="value">@Model.CustomerCount</div></div>
+                <i class="fa-solid fa-users"></i>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <a asp-controller="Inventory" asp-action="Index" asp-route-tab="can-nhap" class="text-decoration-none">
+            <div class="stat-card stat-orange">
+                <div><div class="label">Sản phẩm (@Model.OutOfStockCount hết hàng)</div><div class="value">@Model.ProductCount</div></div>
+                <i class="fa-solid fa-book"></i>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-xl-7">
+        <div class="card h-100">
+            <div class="card-header fw-bold"><i class="fa-solid fa-chart-column me-2 text-brand"></i>Doanh thu 6 tháng gần nhất</div>
+            <div class="card-body">
+                <div class="revenue-bars">
+                    @foreach (var r in Model.RevenueByMonth)
+                    {
+                        <div class="bar">
+                            <b>@(r.Value >= 1_000_000 ? (r.Value / 1_000_000m).ToString("0.#") + "tr" : (r.Value / 1000m).ToString("0") + "k")</b>
+                            <div style="height:@((int)(r.Value * 100 / maxRevenue))%"></div>
+                            <small>@r.Label</small>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-5">
+        <div class="card h-100">
+            <div class="card-header fw-bold"><i class="fa-solid fa-fire me-2 text-brand"></i>Sản phẩm bán chạy</div>
+            <ul class="list-group list-group-flush">
+                @foreach (var p in Model.TopSelling)
+                {
+                    <li class="list-group-item d-flex align-items-center gap-3">
+                        <img src="@p.ImageUrl" style="width:38px;height:50px;object-fit:contain" alt="" />
+                        <div class="flex-grow-1 text-truncate"><a asp-controller="Products" asp-action="Details" asp-route-id="@p.ProductId" class="text-decoration-none text-dark">@p.ProductName</a></div>
+                        <span class="badge bg-danger-subtle text-danger">Đã bán @p.ProductDetail?.SoldQuantity.ToNumber()</span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between"><span class="fw-bold"><i class="fa-solid fa-clock-rotate-left me-2 text-brand"></i>Đơn hàng mới nhất</span><a asp-controller="Orders" asp-action="Index" class="small">Xem tất cả</a></div>
+            <div class="card-body p-0">
+                <partial name="_OrderListPartial" model="new OrderListPartialModel { Orders = Model.RecentOrders, ForAdmin = true, ShowCustomer = true }" />
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between"><span class="fw-bold"><i class="fa-solid fa-triangle-exclamation me-2 text-warning"></i>Sắp hết / hết hàng</span><a asp-controller="Inventory" asp-action="Index" asp-route-tab="can-nhap" class="small">Kho hàng</a></div>
+            <div class="low-stock-grid">
+                @foreach (var p in Model.LowStock)
+                {
+                    int q = p.StockQuantity();
+                    <div class="low-stock-item">
+                        <div class="flex-grow-1 text-truncate">@p.ProductName</div>
+                        <span class="badge @(q == 0 ? "bg-danger" : "bg-warning text-dark")">@(q == 0 ? "Hết hàng" : $"Còn {q}")</span>
+                        <a asp-controller="ProductDetails" asp-action="Edit" asp-route-id="@p.ProductDetail!.ProductDetailId" class="btn btn-sm btn-outline-secondary">Nhập hàng</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

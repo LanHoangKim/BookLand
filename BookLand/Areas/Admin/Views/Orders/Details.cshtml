@@ -1,0 +1,28 @@
+@model Order
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng " + Model.OrderCode();
+}
+<div class="page-head">
+    <div>
+        <h1>Đơn hàng @Model.OrderCode()</h1>
+        <nav class="crumbs"><a asp-controller="Home" asp-action="Index">Tổng quan</a><span>/</span><a asp-action="Index">Quản lý đơn hàng</a><span>/</span><span class="current">@Model.OrderCode()</span></nav>
+    </div>
+    <form asp-action="UpdateStatus" asp-route-id="@Model.OrderId" method="post" class="d-flex gap-2 align-items-center">
+        <label class="text-muted small text-nowrap">Trạng thái:</label>
+        <select name="status" class="form-select form-select-sm" style="width:170px">
+            @foreach (var s in OrderStatuses.All)
+            {
+                <option value="@s" selected="@(Model.Status == s)">@s</option>
+            }
+        </select>
+        <button type="submit" class="btn btn-sm btn-brand text-nowrap">Cập nhật</button>
+    </form>
+</div>
+
+@* Hóa đơn: dùng chung partial với trang Lịch sử giao dịch của khách hàng *@
+<partial name="_InvoicePartial" model="Model" />
+
+<div class="mt-3 d-flex gap-2">
+    <a asp-action="Index" class="btn btn-outline-secondary">Quay lại danh sách</a>
+    <a asp-controller="Customers" asp-action="Details" asp-route-id="@Model.CustomerId" class="btn btn-outline-primary"><i class="fa-solid fa-user me-1"></i>Xem khách hàng</a>
+</div>

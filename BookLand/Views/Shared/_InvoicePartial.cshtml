@@ -1,0 +1,56 @@
+@model Order
+@*
+    Hóa đơn mua hàng - dùng chung cho:
+    - Admin: Quản lý đơn hàng > Chi tiết
+    - Khách hàng: Lịch sử giao dịch > Xem chi tiết, trang Đặt hàng thành công
+*@
+<div class="invoice" id="invoice-@Model.OrderId">
+    <div class="inv-header">
+        <div class="inv-brand">
+            <img src="/images/logo.png" alt="@StoreInfo.Name" />
+            <div class="inv-store">
+                <div>@StoreInfo.Address</div>
+                <div>Hotline: @StoreInfo.Hotline · Email: @StoreInfo.Email</div>
+            </div>
+        </div>
+        <div class="inv-title">
+            <h2>HÓA ĐƠN MUA HÀNG</h2>
+            <div>Mã đơn hàng: <b>@Model.OrderCode()</b></div>
+            <div>Ngày đặt: @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</div>
+            <div>Trạng thái: <span class="status-badge @FormatHelper.StatusCss(Model.Status)">@Model.Status</span></div>
+        </div>
+    </div>
+
+    <div class="inv-parties">
+        <div class="inv-block">
+            <h4>Thông tin khách hàng</h4>
+            <div><span>Họ tên:</span> @Model.Customer?.FullName</div>
+            <div><span>Email:</span> @Model.Customer?.Email</div>
+            <div><span>Điện thoại:</span> @Model.Customer?.Phone</div>
+        </div>
+        <div class="inv-block">
+            <h4>Thông tin giao hàng</h4>
+            <div><span>Người nhận:</span> @Model.ReceiverName</div>
+            <div><span>Điện thoại:</span> @Model.ReceiverPhone</div>
+            <div><span>Địa chỉ:</span> @Model.ShippingAddress</div>
+            @if (!string.IsNullOrEmpty(Model.Note))
+            {
+                <div><span>Ghi chú:</span> @Model.Note</div>
+            }
+            <div><span>Thanh toán:</span> @Model.PaymentMethod</div>
+        </div>
+    </div>
+
+    <partial name="_OrderDetailListPartial" model="Model.OrderDetails" />
+
+    <div class="inv-totals">
+        <div><span>Tạm tính (@Model.OrderDetails.Sum(d => d.Quantity) sản phẩm)</span><b>@Model.Subtotal().ToVnd()</b></div>
+        <div><span>Phí vận chuyển</span><b>@(Model.ShippingFee == 0 ? "Miễn phí" : Model.ShippingFee.ToVnd())</b></div>
+        <div class="inv-grand"><span>TỔNG CỘNG</span><b>@Model.TotalAmount.ToVnd()</b></div>
+    </div>
+
+    <div class="inv-footer">
+        <p>Cảm ơn quý khách đã mua sắm tại @StoreInfo.Name!</p>
+        <button type="button" class="inv-print" onclick="window.print()"><i class="fa-solid fa-print"></i> In hóa đơn</button>
+    </div>
+</div>

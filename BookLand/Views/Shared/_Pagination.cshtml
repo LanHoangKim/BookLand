@@ -1,0 +1,55 @@
+@model PaginationModel
+@{
+    // Giữ nguyên các tham số lọc trên URL, chỉ thay số trang
+    string PageUrl(int page)
+    {
+        var parts = new List<string>();
+        foreach (var kv in Context.Request.Query)
+        {
+            if (string.Equals(kv.Key, "page", StringComparison.OrdinalIgnoreCase)) continue;
+            foreach (var v in kv.Value)
+            {
+                parts.Add($"{Uri.EscapeDataString(kv.Key)}={Uri.EscapeDataString(v ?? "")}");
+            }
+        }
+        parts.Add($"page={page}");
+        return Context.Request.Path + "?" + string.Join("&", parts);
+    }
+
+    int start = Math.Max(1, Model.Page - 2);
+    int end = Math.Min(Model.TotalPages, Model.Page + 2);
+}
+@if (Model.TotalPages > 1)
+{
+    <nav class="pagination" aria-label="Phân trang">
+        @if (Model.Page > 1)
+        {
+            <a class="page-btn page-arrow" href="@PageUrl(Model.Page - 1)" aria-label="Trang trước"><i class="fa-solid fa-chevron-left"></i></a>
+        }
+        @if (start > 1)
+        {
+            <a class="page-btn" href="@PageUrl(1)">1</a>
+            @if (start > 2) { <span class="page-dots">...</span> }
+        }
+        @for (int i = start; i <= end; i++)
+        {
+            if (i == Model.Page)
+            {
+                <span class="page-btn active" aria-current="page">@i</span>
+            }
+            else
+            {
+                <a class="page-btn" href="@PageUrl(i)">@i</a>
+            }
+        }
+        @if (end < Model.TotalPages)
+        {
+            @if (end < Model.TotalPages - 1) { <span class="page-dots">...</span> }
+            <a class="page-btn" href="@PageUrl(Model.TotalPages)">@Model.TotalPages</a>
+        }
+        @if (Model.Page < Model.TotalPages)
+        {
+            <a class="page-btn page-arrow" href="@PageUrl(Model.Page + 1)" aria-label="Trang sau"><i class="fa-solid fa-chevron-right"></i></a>
+        }
+    </nav>
+}

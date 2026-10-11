@@ -1,0 +1,16 @@
+@model List<Order>
+@{
+    ViewData["Title"] = "Lịch sử giao dịch";
+    ViewData["AccountMenu"] = "orders";
+}
+
+<div class="container account-page">
+    <partial name="_AccountSidebar" />
+
+    <div class="account-content">
+        <section class="box acc-section">
+            <h2>Lịch sử giao dịch <span class="muted">(@Model.Count đơn hàng)</span></h2>
+            <partial name="_OrderListPartial" model="new OrderListPartialModel { Orders = Model, ForAdmin = false }" />
+        </section>
+    </div>
+</div>

@@ -1,0 +1,15 @@
+@model ProductDetail
+@{
+    ViewData["Title"] = "Xóa chi tiết sản phẩm";
+}
+<partial name="_PageHeader" model='new PageHeaderModel(ViewData["Title"]!.ToString()!, "Chi tiết sản phẩm")' />
+<div class="card">
+    <div class="card-body">
+        <table class="table table-borderless info-table" style="max-width:700px">
+            <tr><th>Sản phẩm</th><td class="fw-bold">@Model.Product.ProductName</td></tr>
+            <tr><th>Mã hàng</th><td>@Model.Sku</td></tr>
+            <tr><th>Số lượng tồn</th><td>@Model.Quantity</td></tr>
+        </table>
+        <partial name="_DeleteGuard" />
+    </div>
+</div>

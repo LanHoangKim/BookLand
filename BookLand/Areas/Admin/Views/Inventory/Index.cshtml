@@ -1,0 +1,37 @@
+@{
+    ViewData["Title"] = "Quản lý kho hàng";
+    var inStock = ViewBag.InStock as List<ProductDetail> ?? [];
+    var needImport = ViewBag.NeedImport as List<ProductDetail> ?? [];
+    bool importTab = ViewBag.Tab as string == "can-nhap";
+}
+<partial name="_PageHeader" model='new PageHeaderModel(ViewData["Title"]!.ToString()!)' />
+
+<div class="row g-3 mb-3">
+    <div class="col-md-4"><div class="stat-card stat-green"><div><div class="label">Mặt hàng còn tồn</div><div class="value">@inStock.Count</div></div><i class="fa-solid fa-boxes-stacked"></i></div></div>
+    <div class="col-md-4"><div class="stat-card stat-orange"><div><div class="label">Tổng số lượng tồn</div><div class="value">@inStock.Sum(d => d.Quantity).ToNumber()</div></div><i class="fa-solid fa-warehouse"></i></div></div>
+    <div class="col-md-4"><div class="stat-card stat-red"><div><div class="label">Mặt hàng cần nhập</div><div class="value">@needImport.Count</div></div><i class="fa-solid fa-truck-ramp-box"></i></div></div>
+</div>
+
+<div class="card">
+    <div class="toolbar">
+        <ul class="nav nav-tabs border-0" role="tablist">
+            <li class="nav-item"><button class="nav-link @(importTab ? "" : "active")" data-bs-toggle="tab" data-bs-target="#tab-instock" type="button">Danh sách hàng tồn <span class="badge bg-success ms-1">@inStock.Count</span></button></li>
+            <li class="nav-item"><button class="nav-link @(importTab ? "active" : "")" data-bs-toggle="tab" data-bs-target="#tab-import" type="button">Danh sách hàng cần nhập <span class="badge bg-danger ms-1">@needImport.Count</span></button></li>
+        </ul>
+        <form method="get" class="search-inline">
+            <input type="hidden" name="tab" value="@ViewBag.Tab" />
+            <div class="input-group">
+                <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Tìm sản phẩm hoặc mã hàng..." />
+                <button class="btn btn-outline-secondary" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+        </form>
+    </div>
+    <div class="tab-content">
+        <div class="tab-pane fade @(importTab ? "" : "show active")" id="tab-instock">
+            <partial name="_InventoryTable" model="inStock" />
+        </div>
+        <div class="tab-pane fade @(importTab ? "show active" : "")" id="tab-import">
+            <partial name="_InventoryTable" model="needImport" />
+        </div>
+    </div>
+</div>

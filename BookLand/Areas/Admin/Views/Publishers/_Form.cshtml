@@ -1,0 +1,29 @@
+@model Publisher
+<div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="PublisherName" class="form-label"><span class="req">*</span></label>
+        <input asp-for="PublisherName" class="form-control" />
+        <span asp-validation-for="PublisherName" class="text-danger field"></span>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="Address" class="form-label"></label>
+        <input asp-for="Address" class="form-control" />
+        <span asp-validation-for="Address" class="text-danger field"></span>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label asp-for="Phone" class="form-label"></label>
+        <input asp-for="Phone" class="form-control" />
+        <span asp-validation-for="Phone" class="text-danger field"></span>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" type="email" />
+        <span asp-validation-for="Email" class="text-danger field"></span>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label asp-for="Website" class="form-label"></label>
+        <input asp-for="Website" class="form-control" />
+        <span asp-validation-for="Website" class="text-danger field"></span>
+    </div>
+</div>

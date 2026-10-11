@@ -1,0 +1,19 @@
+@model CoverType
+@{
+    ViewData["Title"] = "Sửa hình thức bìa";
+}
+<partial name="_PageHeader" model='new PageHeaderModel(ViewData["Title"]!.ToString()!, "Hình thức bìa")' />
+<div class="card">
+    <form asp-action="Edit" method="post" class="card-body" novalidate style="max-width:520px">
+        <input type="hidden" asp-for="CoverTypeId" />
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+        <div class="mb-3">
+            <label asp-for="CoverTypeName" class="form-label"><span class="req">*</span></label>
+            <input asp-for="CoverTypeName" class="form-control" />
+            <span asp-validation-for="CoverTypeName" class="text-danger field"></span>
+        </div>
+        <button type="submit" class="btn btn-brand"><i class="fa-solid fa-floppy-disk me-1"></i> Lưu thay đổi</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Hủy</a>
+    </form>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

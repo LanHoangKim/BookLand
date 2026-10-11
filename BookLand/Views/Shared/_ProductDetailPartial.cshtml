@@ -1,0 +1,156 @@
+@model ProductDetailPartialModel
+@{
+    // Partial dùng chung: trang chi tiết của khách hàng (có nút mua) và trang Details của Admin (không có nút mua)
+    var p = Model.Product;
+    var d = p.ProductDetail;
+    int discount = p.DiscountPercent();
+    int stock = p.StockQuantity();
+    int sold = d?.SoldQuantity ?? 0;
+    var images = new List<string>();
+    if (!string.IsNullOrEmpty(p.ImageUrl)) images.Add(p.ImageUrl);
+    images.AddRange(p.ProductImages.OrderBy(i => i.SortOrder).Select(i => i.ImageUrl));
+    if (images.Count == 0) images.Add("/images/no-image.png");
+}
+
+<div class="pd">
+    <div class="pd-left pd-box">
+        <div class="pd-main-image">
+            <img id="pd-main-img" src="@images[0]" alt="@p.ProductName" />
+        </div>
+        <div class="pd-thumbs">
+            @for (int i = 0; i < images.Count; i++)
+            {
+                <button type="button" class="pd-thumb @(i == 0 ? "active" : "")" data-src="@images[i]" aria-label="Ảnh @(i + 1)">
+                    <img src="@images[i]" alt="@p.ProductName - ảnh @(i + 1)" loading="lazy" />
+                </button>
+            }
+        </div>
+
+        @if (Model.ShowPurchase)
+        {
+            <div class="pd-actions">
+                @if (stock > 0)
+                {
+                    <button type="submit" form="pd-buy-form" class="btn-outline-red pd-btn"><i class="fa-solid fa-cart-shopping"></i> Thêm vào giỏ hàng</button>
+                    <button type="submit" form="pd-buy-form" name="buyNow" value="1" class="btn-red pd-btn">Mua ngay</button>
+                }
+                else
+                {
+                    <button type="button" class="btn-disabled pd-btn" disabled>Tạm hết hàng</button>
+                }
+            </div>
+            <div class="pd-policies">
+                <h4>Chính sách ưu đãi của @StoreInfo.Name</h4>
+                <div class="pd-policy"><i class="fa-solid fa-truck-fast"></i> <b>Thời gian giao hàng:</b> Giao nhanh và uy tín <i class="fa-solid fa-chevron-right"></i></div>
+                <div class="pd-policy"><i class="fa-solid fa-rotate-left"></i> <b>Chính sách đổi trả:</b> Đổi trả miễn phí toàn quốc <i class="fa-solid fa-chevron-right"></i></div>
+                <div class="pd-policy"><i class="fa-solid fa-store"></i> <b>Chính sách khách sỉ:</b> Ưu đãi khi mua số lượng lớn <i class="fa-solid fa-chevron-right"></i></div>
+            </div>
+        }
+    </div>
+
+    <div class="pd-right">
+        <div class="pd-box pd-info">
+            <h1 class="pd-title">@p.ProductName</h1>
+            <div class="pd-attrs">
+                <div>Nhà cung cấp: <a class="pd-link" asp-area="" asp-controller="Product" asp-action="Index" asp-route-suppliers="@p.SupplierId">@(p.Supplier?.SupplierName ?? "—")</a></div>
+                <div>Tác giả: <b>@(p.Author?.AuthorName ?? "—")</b></div>
+                <div>Nhà xuất bản: <b>@(p.Publisher?.PublisherName ?? "—")</b></div>
+                <div>Hình thức bìa: <b>@(d?.CoverType?.CoverTypeName ?? "—")</b></div>
+            </div>
+            <div class="pd-sold">
+                <span><i class="fa-solid fa-fire"></i> Đã bán @sold.ToShortCount()</span>
+                <span class="sep">|</span>
+                <span>Danh mục: <a class="pd-link" asp-area="" asp-controller="Product" asp-action="Index" asp-route-categoryId="@p.CategoryId">@p.Category?.CategoryName</a></span>
+            </div>
+            <div class="pd-price">
+                <span class="pd-price-current">@p.Price.ToVnd()</span>
+                @if (discount > 0)
+                {
+                    <span class="pd-price-old">@p.OriginalPrice.ToVnd()</span>
+                    <span class="pd-discount">-@discount%</span>
+                }
+            </div>
+            <div class="pd-stock @(stock > 0 ? "in" : "out")">
+                @if (stock > 0)
+                {
+                    <i class="fa-solid fa-circle-check"></i> <span>Còn <b>@stock</b> sản phẩm trong kho</span>
+                }
+                else
+                {
+                    <i class="fa-solid fa-circle-xmark"></i> <span>Tạm hết hàng</span>
+                }
+            </div>
+            @if (!Model.ShowPurchase)
+            {
+                <div class="pd-admin-flags">
+                    <span class="flag @(p.IsActive ? "on" : "off")">@(p.IsActive ? "Đang bán" : "Ngừng bán")</span>
+                    @if (p.IsFeatured) { <span class="flag on">Nổi bật</span> }
+                    @if (p.IsFlashSale) { <span class="flag on">Flash Sale</span> }
+                    <span class="flag">Ngày tạo: @p.CreatedAt.ToString("dd/MM/yyyy")</span>
+                </div>
+            }
+        </div>
+
+        @if (Model.ShowPurchase)
+        {
+            <div class="pd-box pd-shipping">
+                <h3>Thông tin vận chuyển</h3>
+                <div class="pd-ship-row"><i class="fa-solid fa-truck"></i>
+                    <div><b>Giao hàng tiêu chuẩn</b><span>Dự kiến giao trong 2 - 4 ngày. Miễn phí vận chuyển cho đơn hàng từ 300.000 đ.</span></div>
+                </div>
+                <h3>Ưu đãi liên quan</h3>
+                <div class="pd-offers">
+                    <span class="pd-offer"><i class="fa-solid fa-ticket"></i> Mã giảm 10K cho đơn từ 150K</span>
+                    <span class="pd-offer"><i class="fa-solid fa-truck-fast"></i> Freeship đơn từ 300K</span>
+                    <span class="pd-offer"><i class="fa-solid fa-gift"></i> Tặng bookmark</span>
+                </div>
+                @if (stock > 0)
+                {
+                    <form id="pd-buy-form" asp-area="" asp-controller="Cart" asp-action="Add" method="post">
+                        <input type="hidden" name="productId" value="@p.ProductId" />
+                        <div class="pd-qty-row">
+                            <label for="pd-qty">Số lượng:</label>
+                            <div class="qty-stepper" data-max="@stock">
+                                <button type="button" class="qty-minus" aria-label="Giảm"><i class="fa-solid fa-minus"></i></button>
+                                <input type="number" id="pd-qty" name="quantity" class="qty-input" value="1" min="1" max="@stock" />
+                                <button type="button" class="qty-plus" aria-label="Tăng"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                            <span class="qty-hint">Tối đa @stock sản phẩm</span>
+                        </div>
+                    </form>
+                }
+            </div>
+        }
+
+        <div class="pd-box pd-specs">
+            <h3>Thông tin chi tiết</h3>
+            <table>
+                <tr><th>Mã hàng</th><td>@(d?.Sku ?? "—")</td></tr>
+                <tr><th>Tên Nhà Cung Cấp</th><td><span class="pd-link">@(p.Supplier?.SupplierName ?? "—")</span></td></tr>
+                <tr><th>Tác giả</th><td>@(p.Author?.AuthorName ?? "—")</td></tr>
+                @if (!string.IsNullOrEmpty(d?.Translator))
+                {
+                    <tr><th>Người Dịch</th><td>@d.Translator</td></tr>
+                }
+                <tr><th>NXB</th><td>@(p.Publisher?.PublisherName ?? "—")</td></tr>
+                <tr><th>Năm XB</th><td>@(d?.PublishYear?.ToString() ?? "—")</td></tr>
+                <tr><th>Ngôn Ngữ</th><td>@(d?.Language ?? "—")</td></tr>
+                <tr><th>Trọng lượng (gr)</th><td>@(d?.Weight?.ToString() ?? "—")</td></tr>
+                <tr><th>Kích Thước Bao Bì</th><td>@(d?.Dimensions ?? "—")</td></tr>
+                <tr><th>Số trang</th><td>@(d?.PageCount?.ToString() ?? "—")</td></tr>
+                <tr><th>Hình thức</th><td>@(d?.CoverType?.CoverTypeName ?? "—")</td></tr>
+                @if (!Model.ShowPurchase)
+                {
+                    <tr><th>Số lượng tồn</th><td><b>@stock</b></td></tr>
+                    <tr><th>Đã bán</th><td>@sold.ToNumber()</td></tr>
+                }
+            </table>
+        </div>
+
+        <div class="pd-box pd-desc">
+            <h3>Mô tả sản phẩm</h3>
+            <div class="pd-desc-title">@p.ProductName.ToUpper()</div>
+            <p>@p.Description</p>
+        </div>
+    </div>
+</div>

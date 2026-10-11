@@ -1,0 +1,109 @@
+@{
+    string controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    string tab = Context.Request.Query["tab"].ToString();
+    bool catalogOpen = new[] { "Categories", "Authors", "Publishers", "Suppliers", "CoverTypes" }.Contains(controller);
+    bool goodsOpen = new[] { "Products", "ProductDetails" }.Contains(controller);
+    bool stockOpen = controller == "Inventory";
+    string Active(string c) => controller == c ? "active" : "";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] | Quản trị @StoreInfo.Name</title>
+    <link rel="icon" href="~/favicon.ico" />
+    <link rel="stylesheet" href="~/lib/roboto/roboto.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/partials.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+</head>
+<body class="admin-body">
+    <aside class="admin-sidebar" id="admin-sidebar">
+        <a class="admin-brand" asp-area="Admin" asp-controller="Home" asp-action="Index">
+            <img src="~/images/logo.png" alt="@StoreInfo.Name" />
+            <span>ADMIN</span>
+        </a>
+        <nav class="admin-menu">
+            <a class="menu-link @Active("Home")" asp-area="Admin" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-gauge-high"></i> Tổng quan</a>
+
+            <div class="menu-label">Danh mục &amp; hàng hóa</div>
+            <button class="menu-link menu-toggle @(catalogOpen ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#menu-catalog" aria-expanded="@(catalogOpen ? "true" : "false")">
+                <i class="fa-solid fa-folder-tree"></i> Quản lý danh mục <i class="fa-solid fa-chevron-down caret"></i>
+            </button>
+            <div class="collapse @(catalogOpen ? "show" : "")" id="menu-catalog">
+                <a class="sub-link @Active("Categories")" asp-area="Admin" asp-controller="Categories" asp-action="Index">Danh mục sản phẩm</a>
+                <a class="sub-link @Active("Authors")" asp-area="Admin" asp-controller="Authors" asp-action="Index">Tác giả</a>
+                <a class="sub-link @Active("Publishers")" asp-area="Admin" asp-controller="Publishers" asp-action="Index">Nhà xuất bản</a>
+                <a class="sub-link @Active("Suppliers")" asp-area="Admin" asp-controller="Suppliers" asp-action="Index">Nhà cung cấp</a>
+                <a class="sub-link @Active("CoverTypes")" asp-area="Admin" asp-controller="CoverTypes" asp-action="Index">Hình thức bìa</a>
+            </div>
+
+            <button class="menu-link menu-toggle @(goodsOpen ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#menu-goods" aria-expanded="@(goodsOpen ? "true" : "false")">
+                <i class="fa-solid fa-book"></i> Quản lý hàng hóa <i class="fa-solid fa-chevron-down caret"></i>
+            </button>
+            <div class="collapse @(goodsOpen ? "show" : "")" id="menu-goods">
+                <a class="sub-link @Active("Products")" asp-area="Admin" asp-controller="Products" asp-action="Index">Sản phẩm</a>
+                <a class="sub-link @Active("ProductDetails")" asp-area="Admin" asp-controller="ProductDetails" asp-action="Index">Chi tiết sản phẩm</a>
+            </div>
+
+            <button class="menu-link menu-toggle @(stockOpen ? "" : "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#menu-stock" aria-expanded="@(stockOpen ? "true" : "false")">
+                <i class="fa-solid fa-warehouse"></i> Quản lý kho hàng <i class="fa-solid fa-chevron-down caret"></i>
+            </button>
+            <div class="collapse @(stockOpen ? "show" : "")" id="menu-stock">
+                <a class="sub-link @(stockOpen && tab != "can-nhap" ? "active" : "")" asp-area="Admin" asp-controller="Inventory" asp-action="Index" asp-route-tab="ton-kho">Danh sách hàng tồn</a>
+                <a class="sub-link @(stockOpen && tab == "can-nhap" ? "active" : "")" asp-area="Admin" asp-controller="Inventory" asp-action="Index" asp-route-tab="can-nhap">Danh sách hàng cần nhập</a>
+            </div>
+
+            <div class="menu-label">Người dùng &amp; bán hàng</div>
+            <a class="menu-link @Active("AdminUsers")" asp-area="Admin" asp-controller="AdminUsers" asp-action="Index"><i class="fa-solid fa-user-shield"></i> Quản lý người dùng</a>
+            <a class="menu-link @Active("Customers")" asp-area="Admin" asp-controller="Customers" asp-action="Index"><i class="fa-solid fa-users"></i> Quản lý khách hàng</a>
+            <a class="menu-link @Active("Orders")" asp-area="Admin" asp-controller="Orders" asp-action="Index"><i class="fa-solid fa-receipt"></i> Quản lý đơn hàng</a>
+
+            <div class="menu-label">Khác</div>
+            <a class="menu-link" asp-area="" asp-controller="Home" asp-action="Index" target="_blank"><i class="fa-solid fa-store"></i> Xem website</a>
+        </nav>
+    </aside>
+
+    <div class="admin-main">
+        <header class="admin-topbar">
+            <button class="btn btn-light btn-sm sidebar-toggle" type="button" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+            <div class="topbar-title">@ViewData["Title"]</div>
+            <div class="dropdown ms-auto">
+                <button class="btn btn-light dropdown-toggle admin-user" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <span>@User.Identity?.Name</span>
+                    <small class="text-muted">(@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value)</small>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Index" target="_blank"><i class="fa-solid fa-store me-2"></i>Xem website</a></li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li>
+                        <form asp-area="Admin" asp-controller="Account" asp-action="Logout" method="post">
+                            <button type="submit" class="dropdown-item text-danger"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Đăng xuất</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </header>
+
+        <main class="admin-content">
+            @if (TempData["Success"] is string ok)
+            {
+                <div class="alert alert-success alert-dismissible fade show"><i class="fa-solid fa-circle-check me-2"></i>@ok<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+            }
+            @if (TempData["Error"] is string err)
+            {
+                <div class="alert alert-danger alert-dismissible fade show"><i class="fa-solid fa-circle-exclamation me-2"></i>@err<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+            }
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/admin.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

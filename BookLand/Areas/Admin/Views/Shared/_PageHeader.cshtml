@@ -1,0 +1,18 @@
+@model PageHeaderModel
+<div class="page-head">
+    <div>
+        <h1>@Model.Title</h1>
+        <nav class="crumbs">
+            <a asp-area="Admin" asp-controller="Home" asp-action="Index">Tổng quan</a>
+            @if (!string.IsNullOrEmpty(Model.Parent))
+            {
+                <span>/</span> <span>@Model.Parent</span>
+            }
+            <span>/</span> <span class="current">@Model.Title</span>
+        </nav>
+    </div>
+    @if (Model.CanCreate)
+    {
+        <a class="btn btn-brand" asp-action="Create"><i class="fa-solid fa-plus me-1"></i> Thêm mới</a>
+    }
+</div>

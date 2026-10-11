@@ -1,0 +1,94 @@
+@model ProfileViewModel
+@{
+    ViewData["Title"] = "Hồ sơ khách hàng";
+    ViewData["AccountMenu"] = "profile";
+    var customer = ViewBag.Customer as Customer;
+}
+
+<div class="container account-page">
+    <partial name="_AccountSidebar" />
+
+    <div class="account-content">
+        <section class="box acc-section">
+            <h2>Hồ sơ khách hàng</h2>
+            @if (customer != null)
+            {
+                <p class="muted">Thành viên từ ngày @customer.CreatedAt.ToString("dd/MM/yyyy")</p>
+            }
+            <form asp-action="Profile" method="post" novalidate>
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger validation-box"></div>
+                <div class="co-row">
+                    <label asp-for="FullName"></label>
+                    <div class="co-field">
+                        <input asp-for="FullName" class="input" />
+                        <span asp-validation-for="FullName" class="field-error"></span>
+                    </div>
+                </div>
+                <div class="co-row">
+                    <label asp-for="Email"></label>
+                    <div class="co-field"><input asp-for="Email" class="input" readonly /></div>
+                </div>
+                <div class="co-row">
+                    <label asp-for="Phone"></label>
+                    <div class="co-field">
+                        <input asp-for="Phone" class="input" />
+                        <span asp-validation-for="Phone" class="field-error"></span>
+                    </div>
+                </div>
+                <div class="co-row">
+                    <label asp-for="Gender"></label>
+                    <div class="co-field radio-inline">
+                        @foreach (var g in new[] { "Nam", "Nữ", "Khác" })
+                        {
+                            <label><input type="radio" asp-for="Gender" value="@g" /> @g</label>
+                        }
+                    </div>
+                </div>
+                <div class="co-row">
+                    <label asp-for="BirthDate"></label>
+                    <div class="co-field">
+                        <input asp-for="BirthDate" type="date" class="input input-sm" />
+                        <span asp-validation-for="BirthDate" class="field-error"></span>
+                    </div>
+                </div>
+                <div class="co-row">
+                    <label asp-for="Address"></label>
+                    <div class="co-field">
+                        <textarea asp-for="Address" class="input" rows="2" placeholder="Địa chỉ nhận hàng mặc định"></textarea>
+                        <span asp-validation-for="Address" class="field-error"></span>
+                    </div>
+                </div>
+                <div class="co-row">
+                    <label></label>
+                    <div class="co-field"><button type="submit" class="btn-red">Lưu thay đổi</button></div>
+                </div>
+            </form>
+        </section>
+
+        <section class="box acc-section">
+            <h2>Đổi mật khẩu</h2>
+            <form asp-action="ChangePassword" method="post">
+                <div class="co-row">
+                    <label for="CurrentPassword">Mật khẩu hiện tại</label>
+                    <div class="co-field"><input type="password" id="CurrentPassword" name="CurrentPassword" class="input" required /></div>
+                </div>
+                <div class="co-row">
+                    <label for="NewPassword">Mật khẩu mới</label>
+                    <div class="co-field"><input type="password" id="NewPassword" name="NewPassword" class="input" minlength="6" required /></div>
+                </div>
+                <div class="co-row">
+                    <label for="ConfirmPassword">Nhập lại mật khẩu mới</label>
+                    <div class="co-field"><input type="password" id="ConfirmPassword" name="ConfirmPassword" class="input" minlength="6" required /></div>
+                </div>
+                <div class="co-row">
+                    <label></label>
+                    <div class="co-field"><button type="submit" class="btn-outline-red">Đổi mật khẩu</button></div>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewData["Title"] is string t ? t + " | " : "")@StoreInfo.Name - Nhà Sách Trực Tuyến</title>
+    <link rel="icon" href="~/favicon.ico" />
+    <link rel="stylesheet" href="~/lib/roboto/roboto.css" />
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/partials.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    @{
+        bool loggedIn = User.Identity?.IsAuthenticated == true;
+        string displayName = User.Identity?.Name ?? "";
+        string shortName = displayName.Contains(' ') ? displayName[(displayName.LastIndexOf(' ') + 1)..] : displayName;
+    }
+
+    <div class="top-banner">
+        <a asp-controller="Product" asp-action="Index" asp-route-sort="giam-gia" class="container top-banner-link">
+            <img src="~/images/banners/top-strip.jpg" alt="Săn sách hay - giá cực hời, giảm đến 50%" />
+        </a>
+    </div>
+
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="logo" asp-controller="Home" asp-action="Index" title="Trang chủ">
+                <img src="~/images/logo.png" alt="@StoreInfo.Name" />
+            </a>
+
+            <vc:category-menu></vc:category-menu>
+
+            <section class="search-section">
+                <form class="search-container" asp-controller="Product" asp-action="Index" method="get" role="search">
+                    <input type="text" id="search-input" name="keyword" value="@Context.Request.Query["keyword"]"
+                           placeholder="Tìm kiếm sách, tác giả, nhà xuất bản..." autocomplete="off" aria-label="Tìm kiếm" />
+                    <button type="submit" id="search-button" aria-label="Tìm kiếm"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </form>
+            </section>
+
+            <div class="header-actions">
+                <div class="header-action notify-action">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="ha-label">Thông Báo</span>
+                    <div class="ha-dropdown notify-dropdown">
+                        <div class="dropdown-title"><i class="fa-regular fa-bell"></i> Thông báo</div>
+                        <p class="dropdown-empty">@(loggedIn ? "Bạn chưa có thông báo mới." : "Vui lòng đăng nhập để xem thông báo.")</p>
+                    </div>
+                </div>
+
+                <div class="cart header-action">
+                    <a asp-controller="Cart" asp-action="Index" class="cart-link">
+                        <span class="icon-wrap">
+                            <i class="fas fa-shopping-cart"></i>
+                            <vc:cart-count></vc:cart-count>
+                        </span>
+                        <span class="ha-label">Giỏ Hàng</span>
+                    </a>
+                </div>
+
+                <div class="header-action account-action @(loggedIn ? "logged-in" : "")">
+                    @if (loggedIn)
+                    {
+                        <a asp-controller="Account" asp-action="Profile" class="account-link" title="Hồ sơ người dùng">
+                            <i class="fa-solid fa-circle-user user-avatar-icon"></i>
+                            <span class="ha-label user-name">@shortName</span>
+                        </a>
+                        <div class="ha-dropdown account-dropdown">
+                            <div class="account-hello">
+                                <i class="fa-solid fa-circle-user"></i>
+                                <div>
+                                    <div class="hello-name">@displayName</div>
+                                    <div class="hello-sub">Thành viên @StoreInfo.Name</div>
+                                </div>
+                            </div>
+                            <a asp-controller="Account" asp-action="Orders" class="dropdown-link"><i class="fa-solid fa-receipt"></i> Lịch sử giao dịch</a>
+                            <a asp-controller="Account" asp-action="Profile" class="dropdown-link"><i class="fa-regular fa-id-card"></i> Hồ sơ khách hàng</a>
+                            <form asp-controller="Account" asp-action="Logout" method="post">
+                                <button type="submit" class="dropdown-link logout-link"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</button>
+                            </form>
+                        </div>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="account-link">
+                            <i class="fa-regular fa-user"></i>
+                            <span class="ha-label">Tài khoản</span>
+                        </a>
+                        <div class="ha-dropdown account-dropdown guest">
+                            <a asp-controller="Account" asp-action="Login" class="btn-red btn-block">Đăng nhập</a>
+                            <a asp-controller="Account" asp-action="Register" class="btn-outline-red btn-block">Đăng ký</a>
+                        </div>
+                    }
+                </div>
+
+                <div class="lang-box" title="Tiếng Việt">
+                    <span class="flag-vn"><i class="fa-solid fa-star"></i></span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="site-main">
+        @RenderBody()
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-box">
+                <div class="footer-about">
+                    <img src="~/images/logo.png" alt="@StoreInfo.Name" class="footer-logo" />
+                    <p>@StoreInfo.Address</p>
+                    <p>@StoreInfo.FullName nhận đặt hàng trực tuyến và giao hàng tận nơi. Hỗ trợ đổi trả trong 30 ngày, thanh toán khi nhận hàng trên toàn quốc.</p>
+                    <div class="footer-social">
+                        <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" aria-label="Youtube"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="#" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                    </div>
+                    <div class="footer-apps">
+                        <span class="app-badge"><i class="fa-brands fa-google-play"></i> Google Play</span>
+                        <span class="app-badge"><i class="fa-brands fa-apple"></i> App Store</span>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-cols">
+                        <div>
+                            <h4>DỊCH VỤ</h4>
+                            <a href="#">Điều khoản sử dụng</a>
+                            <a href="#">Chính sách bảo mật thông tin cá nhân</a>
+                            <a href="#">Chính sách bảo mật thanh toán</a>
+                            <a href="#">Giới thiệu @StoreInfo.Name</a>
+                            <a href="#">Hệ thống nhà sách</a>
+                        </div>
+                        <div>
+                            <h4>HỖ TRỢ</h4>
+                            <a href="#">Chính sách đổi - trả - hoàn tiền</a>
+                            <a href="#">Chính sách bảo hành - bồi hoàn</a>
+                            <a href="#">Chính sách vận chuyển</a>
+                            <a href="#">Chính sách khách sỉ</a>
+                        </div>
+                        <div>
+                            <h4>TÀI KHOẢN CỦA TÔI</h4>
+                            <a asp-controller="Account" asp-action="Login">Đăng nhập/Tạo mới tài khoản</a>
+                            <a asp-controller="Account" asp-action="Profile">Hồ sơ khách hàng</a>
+                            <a asp-controller="Account" asp-action="Orders">Lịch sử giao dịch</a>
+                            <a asp-controller="Cart" asp-action="Index">Giỏ hàng</a>
+                        </div>
+                    </div>
+                    <h4>LIÊN HỆ</h4>
+                    <div class="footer-contact">
+                        <span><i class="fa-solid fa-location-dot"></i> @StoreInfo.Address</span>
+                        <span><i class="fa-solid fa-envelope"></i> @StoreInfo.Email</span>
+                        <span><i class="fa-solid fa-phone"></i> @StoreInfo.Hotline</span>
+                    </div>
+                    <div class="footer-partners">
+                        <span class="partner"><i class="fa-solid fa-truck-fast"></i> Giao hàng nhanh</span>
+                        <span class="partner"><i class="fa-solid fa-money-bill-wave"></i> Thanh toán COD</span>
+                        <span class="partner"><i class="fa-solid fa-building-columns"></i> Chuyển khoản</span>
+                        <span class="partner"><i class="fa-brands fa-cc-visa"></i> Visa</span>
+                        <span class="partner"><i class="fa-brands fa-cc-mastercard"></i> Mastercard</span>
+                    </div>
+                </div>
+            </div>
+            <p class="footer-note">Website demo phục vụ môn Lập trình Web - giao diện tham khảo fahasa.com, không phải trang thương mại thật.</p>
+        </div>
+    </footer>
+
+    <div id="toast-container" aria-live="polite"
+         data-success="@TempData["Success"]" data-error="@TempData["Error"]" data-info="@TempData["Info"]"></div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

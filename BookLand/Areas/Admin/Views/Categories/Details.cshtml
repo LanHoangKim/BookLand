@@ -1,0 +1,30 @@
+@model Category
+@{
+    ViewData["Title"] = "Chi tiết danh mục";
+    var products = ViewBag.Products as List<Product> ?? [];
+}
+<partial name="_PageHeader" model='new PageHeaderModel(ViewData["Title"]!.ToString()!, "Danh mục sản phẩm")' />
+
+<div class="card">
+    <div class="card-body d-flex gap-4 flex-wrap">
+        <img src="@(Model.ImageUrl ?? "/images/no-image.png")" class="img-preview" alt="" />
+        <table class="table table-borderless info-table mb-0 flex-grow-1" style="max-width:700px">
+            <tr><th>Mã danh mục</th><td>@Model.CategoryId</td></tr>
+            <tr><th>Tên danh mục</th><td class="fw-bold">@Model.CategoryName</td></tr>
+            <tr><th>Danh mục cha</th><td>@(Model.Parent?.CategoryName ?? "— (đây là danh mục cha)")</td></tr>
+            @if (Model.InverseParent.Count > 0)
+            {
+                <tr><th>Danh mục con</th><td>@string.Join(", ", Model.InverseParent.OrderBy(c => c.SortOrder).Select(c => c.CategoryName))</td></tr>
+            }
+            <tr><th>Mô tả</th><td>@(Model.Description ?? "—")</td></tr>
+            <tr><th>Thứ tự / Hiển thị</th><td>@Model.SortOrder / @(Model.IsActive ? "Đang hiển thị" : "Đang ẩn")</td></tr>
+            <tr><th>Tổng số hàng hóa</th><td><span class="badge bg-primary-subtle text-primary fs-6">@products.Count</span></td></tr>
+        </table>
+    </div>
+    <div class="card-footer bg-white">
+        <a asp-action="Edit" asp-route-id="@Model.CategoryId" class="btn btn-outline-primary"><i class="fa-regular fa-pen-to-square me-1"></i>Sửa</a>
+        <a asp-action="Index" class="btn btn-outline-secondary">Quay lại danh sách</a>
+    </div>
+</div>
+
+<partial name="_RelatedProducts" model="products" />

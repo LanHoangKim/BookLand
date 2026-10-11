@@ -1,0 +1,199 @@
+@model ProductListViewModel
+@{
+    ViewData["Title"] = Model.Title;
+    var parents = Model.CategoryTree.Where(c => c.ParentId == null).ToList();
+    var currentParentId = Model.CurrentCategory?.ParentId ?? Model.CurrentCategory?.CategoryId;
+    bool hasFilters = Model.Prices.Count + Model.Suppliers.Count + Model.Publishers.Count + Model.CoverTypes.Count > 0;
+}
+
+<div class="container listing-page">
+    <nav class="breadcrumb" aria-label="breadcrumb">
+        <a asp-controller="Home" asp-action="Index">Trang chủ</a>
+        <i class="fa-solid fa-chevron-right"></i>
+        @if (Model.Breadcrumb.Count == 0)
+        {
+            <span class="current">@(string.IsNullOrWhiteSpace(Model.Keyword) ? "Tất cả sản phẩm" : "Tìm kiếm")</span>
+        }
+        @for (int i = 0; i < Model.Breadcrumb.Count; i++)
+        {
+            var c = Model.Breadcrumb[i];
+            if (i == Model.Breadcrumb.Count - 1)
+            {
+                <span class="current">@c.CategoryName</span>
+            }
+            else
+            {
+                <a asp-action="Index" asp-route-categoryId="@c.CategoryId">@c.CategoryName</a>
+                <i class="fa-solid fa-chevron-right"></i>
+            }
+        }
+    </nav>
+
+    <div class="listing">
+        <aside class="filter-panel">
+            <form id="filter-form" asp-action="Index" method="get">
+                @if (Model.CategoryId.HasValue)
+                {
+                    <input type="hidden" name="categoryId" value="@Model.CategoryId" />
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.Keyword))
+                {
+                    <input type="hidden" name="keyword" value="@Model.Keyword" />
+                }
+
+                <div class="filter-section">
+                    <h4>Nhóm sản phẩm</h4>
+                    <ul class="cat-tree">
+                        <li><a asp-action="Index" asp-route-keyword="@Model.Keyword" class="@(Model.CategoryId == null ? "active" : "")">All Category</a></li>
+                        @foreach (var parent in parents)
+                        {
+                            <li class="lvl-1">
+                                <a asp-action="Index" asp-route-categoryId="@parent.CategoryId" asp-route-keyword="@Model.Keyword"
+                                   class="@(Model.CategoryId == parent.CategoryId ? "active" : "")">@parent.CategoryName</a>
+                                @if (currentParentId == parent.CategoryId)
+                                {
+                                    <ul>
+                                        @foreach (var child in Model.CategoryTree.Where(c => c.ParentId == parent.CategoryId))
+                                        {
+                                            <li class="lvl-2">
+                                                <a asp-action="Index" asp-route-categoryId="@child.CategoryId" asp-route-keyword="@Model.Keyword"
+                                                   class="@(Model.CategoryId == child.CategoryId ? "active" : "")">@child.CategoryName</a>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </div>
+
+                <div class="filter-section">
+                    <h4>Giá</h4>
+                    @foreach (var r in ProductListViewModel.PriceRanges)
+                    {
+                        <label class="check-row">
+                            <input type="checkbox" name="prices" value="@r.Value" @(Model.Prices.Contains(r.Value) ? "checked" : "") class="auto-submit" />
+                            <span>@r.Label</span>
+                        </label>
+                    }
+                </div>
+
+                @if (Model.SupplierFacets.Count > 0)
+                {
+                    <div class="filter-section collapsible">
+                        <h4>Nhà cung cấp</h4>
+                        @for (int i = 0; i < Model.SupplierFacets.Count; i++)
+                        {
+                            var f = Model.SupplierFacets[i];
+                            <label class="check-row @(i >= 6 ? "extra" : "")">
+                                <input type="checkbox" name="suppliers" value="@f.Id" @(Model.Suppliers.Contains(f.Id) ? "checked" : "") class="auto-submit" />
+                                <span>@f.Name</span><em>(@f.Count)</em>
+                            </label>
+                        }
+                        @if (Model.SupplierFacets.Count > 6)
+                        {
+                            <button type="button" class="filter-more">Xem Thêm <i class="fa-solid fa-chevron-down"></i></button>
+                        }
+                    </div>
+                }
+
+                @if (Model.PublisherFacets.Count > 0)
+                {
+                    <div class="filter-section collapsible">
+                        <h4>Nhà xuất bản</h4>
+                        @for (int i = 0; i < Model.PublisherFacets.Count; i++)
+                        {
+                            var f = Model.PublisherFacets[i];
+                            <label class="check-row @(i >= 6 ? "extra" : "")">
+                                <input type="checkbox" name="publishers" value="@f.Id" @(Model.Publishers.Contains(f.Id) ? "checked" : "") class="auto-submit" />
+                                <span>@f.Name</span><em>(@f.Count)</em>
+                            </label>
+                        }
+                        @if (Model.PublisherFacets.Count > 6)
+                        {
+                            <button type="button" class="filter-more">Xem Thêm <i class="fa-solid fa-chevron-down"></i></button>
+                        }
+                    </div>
+                }
+
+                @if (Model.CoverTypeFacets.Count > 0)
+                {
+                    <div class="filter-section">
+                        <h4>Hình thức bìa</h4>
+                        @foreach (var f in Model.CoverTypeFacets)
+                        {
+                            <label class="check-row">
+                                <input type="checkbox" name="coverTypes" value="@f.Id" @(Model.CoverTypes.Contains(f.Id) ? "checked" : "") class="auto-submit" />
+                                <span>@f.Name</span><em>(@f.Count)</em>
+                            </label>
+                        }
+                    </div>
+                }
+            </form>
+        </aside>
+
+        <section class="listing-main">
+            <div class="listing-head">
+                <h1 class="listing-title">@Model.Title <span>(@Model.Results.TotalItems sản phẩm)</span></h1>
+                <div class="listing-tools">
+                    <label>Sắp xếp theo:</label>
+                    <select name="sort" form="filter-form" class="auto-submit select-box">
+                        @foreach (var s in ProductListViewModel.SortOptions)
+                        {
+                            <option value="@s.Value" selected="@(Model.Sort == s.Value)">@s.Label</option>
+                        }
+                    </select>
+                    <select name="pageSize" form="filter-form" class="auto-submit select-box">
+                        @foreach (int size in ProductListViewModel.PageSizes)
+                        {
+                            <option value="@size" selected="@(Model.PageSize == size)">@size sản phẩm</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            @if (hasFilters)
+            {
+                <div class="active-filters">
+                    <span>Đang lọc:</span>
+                    @foreach (var r in ProductListViewModel.PriceRanges.Where(r => Model.Prices.Contains(r.Value)))
+                    {
+                        <span class="chip">@r.Label</span>
+                    }
+                    @foreach (var f in Model.SupplierFacets.Where(f => Model.Suppliers.Contains(f.Id)))
+                    {
+                        <span class="chip">@f.Name</span>
+                    }
+                    @foreach (var f in Model.PublisherFacets.Where(f => Model.Publishers.Contains(f.Id)))
+                    {
+                        <span class="chip">@f.Name</span>
+                    }
+                    @foreach (var f in Model.CoverTypeFacets.Where(f => Model.CoverTypes.Contains(f.Id)))
+                    {
+                        <span class="chip">@f.Name</span>
+                    }
+                    <a class="clear-filters" asp-action="Index" asp-route-categoryId="@Model.CategoryId" asp-route-keyword="@Model.Keyword">Xóa bộ lọc</a>
+                </div>
+            }
+
+            @if (Model.Results.Items.Count == 0)
+            {
+                <div class="listing-empty">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <p>Không tìm thấy sản phẩm phù hợp.</p>
+                    <a class="btn-red" asp-action="Index">Xem tất cả sản phẩm</a>
+                </div>
+            }
+            else
+            {
+                <div class="product-grid cols-4">
+                    @foreach (var p in Model.Results.Items)
+                    {
+                        <div class="product-item"><partial name="_ProductCard" model="p" /></div>
+                    }
+                </div>
+                <partial name="_Pagination" model="new PaginationModel { Page = Model.Results.Page, TotalPages = Model.Results.TotalPages }" />
+            }
+        </section>
+    </div>
+</div>

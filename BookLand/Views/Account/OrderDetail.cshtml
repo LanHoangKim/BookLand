@@ -1,0 +1,14 @@
+@model Order
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng " + Model.OrderCode();
+    ViewData["AccountMenu"] = "orders";
+}
+
+<div class="container account-page">
+    <partial name="_AccountSidebar" />
+
+    <div class="account-content">
+        <a class="continue-link" asp-action="Orders"><i class="fa-solid fa-arrow-left-long"></i> Quay lại lịch sử giao dịch</a>
+        <partial name="_InvoicePartial" model="Model" />
+    </div>
+</div>

@@ -1,0 +1,42 @@
+@model PagedList<ProductDetail>
+@{
+    ViewData["Title"] = "Chi tiết sản phẩm";
+}
+<partial name="_PageHeader" model='new PageHeaderModel(ViewData["Title"]!.ToString()!, "Quản lý hàng hóa", true)' />
+
+<div class="card">
+    <div class="toolbar">
+        <partial name="_SearchBox" model="ViewBag.Search as string" view-data='new ViewDataDictionary(ViewData) { ["Placeholder"] = "Tìm theo tên sản phẩm hoặc mã hàng..." }' />
+        <span class="text-muted">@Model.TotalItems bản ghi</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 admin-table">
+            <thead>
+                <tr>
+                    <th>Sản phẩm</th><th>Mã hàng</th><th>Hình thức</th><th class="text-center">Số trang</th><th class="text-center">Năm XB</th>
+                    <th class="text-center">Tồn kho</th><th class="text-center">Đã bán</th><th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var d in Model.Items)
+                {
+                    <tr>
+                        <td class="fw-500">@d.Product.ProductName</td>
+                        <td><code>@d.Sku</code></td>
+                        <td>@(d.CoverType?.CoverTypeName ?? "—")</td>
+                        <td class="text-center">@d.PageCount</td>
+                        <td class="text-center">@d.PublishYear</td>
+                        <td class="text-center"><span class="badge fs-6 @(d.Quantity == 0 ? "bg-danger" : d.Quantity <= 10 ? "bg-warning text-dark" : "bg-success-subtle text-success")">@d.Quantity</span></td>
+                        <td class="text-center">@d.SoldQuantity.ToNumber()</td>
+                        <td class="actions">
+                            <a asp-action="Details" asp-route-id="@d.ProductDetailId" class="btn btn-outline-secondary" title="Chi tiết"><i class="fa-regular fa-eye"></i></a>
+                            <a asp-action="Edit" asp-route-id="@d.ProductDetailId" class="btn btn-outline-primary" title="Sửa"><i class="fa-regular fa-pen-to-square"></i></a>
+                            <a asp-action="Delete" asp-route-id="@d.ProductDetailId" class="btn btn-outline-danger" title="Xóa"><i class="fa-regular fa-trash-can"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_Pagination" model="new PaginationModel { Page = Model.Page, TotalPages = Model.TotalPages }" />
+</div>

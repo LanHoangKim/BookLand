@@ -1,0 +1,33 @@
+@model List<AdminUser>
+@{
+    ViewData["Title"] = "Quản lý người dùng";
+    int? currentId = ViewBag.CurrentId as int?;
+}
+<partial name="_PageHeader" model='new PageHeaderModel(ViewData["Title"]!.ToString()!, null, true)' />
+
+<div class="alert alert-light border small"><i class="fa-solid fa-circle-info text-primary me-2"></i>Danh sách tài khoản người quản trị đăng nhập trang Admin. Tài khoản khách hàng nằm ở mục Quản lý khách hàng.</div>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 admin-table">
+            <thead><tr><th style="width:60px">Mã</th><th>Tên đăng nhập</th><th>Họ tên</th><th>Email</th><th>Vai trò</th><th>Ngày tạo</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var a in Model)
+                {
+                    <tr>
+                        <td>@a.AdminId</td>
+                        <td><b>@a.Username</b> @if (a.AdminId == currentId) { <span class="badge bg-info-subtle text-info">Bạn</span> }</td>
+                        <td>@a.FullName</td>
+                        <td>@(a.Email ?? "—")</td>
+                        <td><span class="badge @(a.Role == AdminRoles.Admin ? "bg-danger-subtle text-danger" : "bg-secondary-subtle text-secondary")">@a.Role</span></td>
+                        <td>@a.CreatedAt.ToString("dd/MM/yyyy")</td>
+                        <td class="actions">
+                            <a asp-action="Details" asp-route-id="@a.AdminId" class="btn btn-outline-secondary" title="Chi tiết"><i class="fa-regular fa-eye"></i></a>
+                            <a asp-action="Edit" asp-route-id="@a.AdminId" class="btn btn-outline-primary" title="Sửa"><i class="fa-regular fa-pen-to-square"></i></a>
+                            <a asp-action="Delete" asp-route-id="@a.AdminId" class="btn btn-outline-danger" title="Xóa"><i class="fa-regular fa-trash-can"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

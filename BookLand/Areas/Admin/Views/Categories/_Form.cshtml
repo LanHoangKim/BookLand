@@ -1,0 +1,42 @@
+@model Category
+<div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="mb-3">
+            <label asp-for="CategoryName" class="form-label"><span class="req">*</span></label>
+            <input asp-for="CategoryName" class="form-control" />
+            <span asp-validation-for="CategoryName" class="text-danger field"></span>
+        </div>
+        <div class="row">
+            <div class="col-md-8 mb-3">
+                <label asp-for="ParentId" class="form-label"></label>
+                <select asp-for="ParentId" asp-items="ViewBag.ParentId" class="form-select">
+                    <option value="">— Không có (danh mục cha) —</option>
+                </select>
+                <span asp-validation-for="ParentId" class="text-danger field"></span>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="SortOrder" class="form-label"></label>
+                <input asp-for="SortOrder" class="form-control" type="number" min="0" />
+                <span asp-validation-for="SortOrder" class="text-danger field"></span>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+            <span asp-validation-for="Description" class="text-danger field"></span>
+        </div>
+        <div class="form-check form-switch">
+            <input asp-for="IsActive" class="form-check-input" />
+            <label asp-for="IsActive" class="form-check-label"></label>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <label class="form-label">Ảnh đại diện</label>
+        <div class="mb-2"><img id="cat-preview" src="@(Model.ImageUrl ?? "/images/no-image.png")" class="img-preview" alt="" /></div>
+        <input type="file" name="imageFile" class="form-control" accept="image/*" data-preview="#cat-preview" />
+        <span class="text-danger field" asp-validation-for="ImageUrl"></span>
+        @Html.ValidationMessage("imageFile", new { @class = "text-danger field" })
+        <div class="form-text">JPG, PNG, WEBP - tối đa 2 MB.</div>
+    </div>
+</div>

@@ -1,0 +1,20 @@
+@{
+    string active = ViewData["AccountMenu"] as string ?? "";
+}
+<aside class="box account-sidebar">
+    <div class="acc-user">
+        <i class="fa-solid fa-circle-user"></i>
+        <div>
+            <div class="acc-name">@User.Identity?.Name</div>
+            <div class="acc-sub">Thành viên @StoreInfo.Name</div>
+        </div>
+    </div>
+    <nav class="acc-menu">
+        <a asp-controller="Account" asp-action="Profile" class="@(active == "profile" ? "active" : "")"><i class="fa-regular fa-id-card"></i> Hồ sơ khách hàng</a>
+        <a asp-controller="Account" asp-action="Orders" class="@(active == "orders" ? "active" : "")"><i class="fa-solid fa-receipt"></i> Lịch sử giao dịch</a>
+        <a asp-controller="Cart" asp-action="Index"><i class="fa-solid fa-cart-shopping"></i> Giỏ hàng</a>
+        <form asp-controller="Account" asp-action="Logout" method="post">
+            <button type="submit"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</button>
+        </form>
+    </nav>
+</aside>
