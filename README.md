@@ -19,35 +19,51 @@
 
 ## Cài đặt và chạy
 
-### 1. Yêu cầu
+Có thể lấy mã nguồn bằng 2 cách:
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- SQL Server 2016 trở lên: SQL Server Express/Developer hoặc LocalDB (có sẵn khi cài Visual Studio 2022)
-- SQL Server Management Studio (SSMS) hoặc Azure Data Studio để chạy script
-- Visual Studio 2022 (tùy chọn)
+- **Từ GitHub:** bấm **Code → Download ZIP**, hoặc chạy `git clone <link repo>`
+- **Từ file `BookLand.zip`** được gửi kèm: giải nén ra một thư mục, ví dụ `D:\BookLand`. Nên chọn đường dẫn ngắn, không nằm trong thư mục OneDrive.
 
-### 2. Tạo cơ sở dữ liệu
+### 1. Cài đặt phần mềm cần có
 
-Mở SSMS, kết nối tới SQL Server, rồi **chạy lần lượt** 2 file:
+| Phần mềm | Ghi chú |
+|---|---|
+| [Visual Studio 2022](https://visualstudio.microsoft.com/vs/community/) (bản Community miễn phí) | Khi cài, tick workload **ASP.NET and web development**. Workload này có sẵn **.NET 8 SDK** và **SQL Server LocalDB** |
+| [SQL Server Management Studio (SSMS)](https://learn.microsoft.com/sql/ssms/download-sql-server-management-studio-ssms) | Dùng để chạy 2 file script tạo CSDL |
 
-1. `Database/01_CreateDatabase.sql`: tạo database `BookLandDB` và 12 bảng (có PK, FK, UNIQUE, CHECK, DEFAULT, INDEX)
-2. `Database/02_SeedData.sql`: dữ liệu mẫu gồm 29 danh mục, 87 sách, 10 khách hàng, 30 đơn hàng, 2 quản trị viên
+Nếu không dùng Visual Studio, cần cài [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) và một bản SQL Server bất kỳ (Express/Developer/LocalDB, từ 2016 trở lên).
+
+### 2. Tạo cơ sở dữ liệu bằng SSMS
+
+1. Mở SSMS. Ở ô **Server name**, nhập tên server:
+   - LocalDB (cài kèm Visual Studio): `(localdb)\MSSQLLocalDB`
+   - SQL Server Express: `.\SQLEXPRESS`
+   - SQL Server Developer/bản mặc định: `localhost`
+2. Chọn **Authentication: Windows Authentication**, rồi bấm **Connect**. Nếu SSMS bản mới báo lỗi chứng chỉ, tick **Trust server certificate**.
+3. Vào **File → Open → File...**, chọn `Database/01_CreateDatabase.sql`, rồi bấm **Execute** (hoặc **F5**).
+4. Làm tương tự với `Database/02_SeedData.sql`.
+5. Bấm chuột phải vào **Databases → Refresh**. Nếu thấy `BookLandDB` là đã xong.
+
+| File | Nội dung |
+|---|---|
+| `01_CreateDatabase.sql` | Tạo database `BookLandDB` và 12 bảng (có PK, FK, UNIQUE, CHECK, DEFAULT, INDEX) |
+| `02_SeedData.sql` | Dữ liệu mẫu: 29 danh mục, 87 sách, 10 khách hàng, 30 đơn hàng, 2 quản trị viên |
 
 > Script 01 sẽ **xóa database `BookLandDB` cũ** (nếu có) rồi tạo lại, nên có thể chạy lại 2 file bất cứ lúc nào để đưa dữ liệu về trạng thái ban đầu.
 
-Dùng dòng lệnh `sqlcmd` (thay `<server>` bằng tên server của bạn):
+Nếu không có SSMS, có thể dùng dòng lệnh `sqlcmd`. Mở terminal tại thư mục gốc, thay `<server>` bằng tên server ở bước 1. Tham số `-f 65001` giúp đọc đúng tiếng Việt.
 
 ```bash
-sqlcmd -S <server> -E -i Database/01_CreateDatabase.sql
+sqlcmd -S <server> -E -f 65001 -i Database/01_CreateDatabase.sql
 ```
 
 ```bash
-sqlcmd -S <server> -E -i Database/02_SeedData.sql
+sqlcmd -S <server> -E -f 65001 -i Database/02_SeedData.sql
 ```
 
-### 3. Sửa chuỗi kết nối
+### 3. Sửa chuỗi kết nối (chỉ khi không dùng LocalDB)
 
-Trong `BookLand/appsettings.json`, chuỗi mặc định dùng LocalDB:
+Mở `BookLand/appsettings.json`. Chuỗi mặc định đang dùng LocalDB:
 
 ```json
 "ConnectionStrings": {
@@ -55,17 +71,29 @@ Trong `BookLand/appsettings.json`, chuỗi mặc định dùng LocalDB:
 }
 ```
 
-Nếu dùng SQL Server Express, đổi `Server=(localdb)\\MSSQLLocalDB` thành `Server=.\\SQLEXPRESS`. Nếu dùng bản Developer hoặc bản mặc định, đổi thành `Server=localhost`.
+Đổi phần `Server=...` cho giống tên server đã dùng ở bước 2. Trong file JSON, dấu `\` phải viết thành `\\`:
+
+| Loại SQL Server | Giá trị `Server=` |
+|---|---|
+| LocalDB | `Server=(localdb)\\MSSQLLocalDB` (giữ nguyên) |
+| SQL Server Express | `Server=.\\SQLEXPRESS` |
+| Developer / bản mặc định | `Server=localhost` |
 
 ### 4. Chạy website
 
-**Visual Studio 2022:** mở `BookLand.sln`, chọn profile `http`, rồi nhấn **F5**.
+**Visual Studio 2022:**
 
-**Dòng lệnh:**
+1. Mở file `BookLand.sln`.
+2. Trên thanh công cụ, cạnh nút ▶, chọn profile **http**.
+3. Nhấn **F5**. Lần đầu Visual Studio sẽ tự tải các gói NuGet, nên cần có mạng.
+
+**Dòng lệnh:** mở terminal tại thư mục gốc (thư mục chứa `BookLand.sln`) rồi chạy:
 
 ```bash
 dotnet run --project BookLand --launch-profile http
 ```
+
+Sau đó mở trình duyệt:
 
 - Trang khách hàng: http://localhost:5026
 - Trang quản trị: http://localhost:5026/Admin
@@ -79,6 +107,18 @@ dotnet run --project BookLand --launch-profile http
 | Nhân viên | `nhanvien01` | `Nhanvien@123` |
 
 Mọi khách hàng mẫu (`0900000001` → `0900000010`) đều dùng mật khẩu `123456`.
+
+## Xử lý lỗi thường gặp
+
+| Hiện tượng | Cách xử lý |
+|---|---|
+| `'dotnet' is not recognized...` | Chưa cài .NET 8 SDK. Cài SDK rồi mở lại terminal |
+| `A network-related or instance-specific error occurred while establishing a connection to SQL Server` | Tên server trong `appsettings.json` sai, hoặc dịch vụ SQL Server chưa chạy. Kiểm tra lại bằng tên server đã đăng nhập được trong SSMS (bước 2–3) |
+| `Cannot open database "BookLandDB" requested by the login` | Chưa chạy 2 file script, hoặc đã chạy trên một server khác với server trong `appsettings.json` |
+| Tiếng Việt trong dữ liệu bị lỗi font (dạng `Ã¡`, `?`) | Chạy lại 2 script bằng SSMS (File → Open), hoặc dùng `sqlcmd` có tham số `-f 65001` |
+| `Failed to bind to address http://127.0.0.1:5026: address already in use` | Cổng 5026 đang bị chiếm. Tắt chương trình đang dùng cổng đó, hoặc chạy `dotnet run --project BookLand --urls http://localhost:5080` |
+| Lỗi khi tải gói NuGet (`NU1101`, `NU1301`) | Kiểm tra kết nối mạng, rồi chạy `dotnet restore` |
+| Trang báo lỗi chứng chỉ HTTPS | Chọn profile **http** thay vì **https** |
 
 ## Cơ sở dữ liệu
 

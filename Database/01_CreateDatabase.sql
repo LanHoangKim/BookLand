@@ -1,4 +1,4 @@
-/* =============================================================
+﻿/* =============================================================
    BOOKLAND - CƠ SỞ DỮ LIỆU WEBSITE NHÀ SÁCH (tham khảo fahasa.com)
    Chạy file này trước, sau đó chạy 02_SeedData.sql
    Yêu cầu: SQL Server 2016 trở lên
